@@ -5,10 +5,14 @@ use reqwest::blocking::Client as ClientSync;
 use reqwest::Client as ClientAsync;
 use std::thread;
 use tokio::time::{sleep, Duration};
+
+/// Translates text from one language to another.
+///
+
 pub struct GoogleTranslator {
-    /// How long to wait for a request
+    /// How long to wait for a request in milliseconds
     pub timeout: u64,
-    /// Delay before sending a new request
+    /// Delay before sending a new request in milliseconds
     pub delay: u64,
 }
 impl Translator for GoogleTranslator {
