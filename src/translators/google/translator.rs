@@ -1,10 +1,10 @@
-use std::thread;
 use crate::translators::google::error::GoogleError;
 use crate::translators::google::requests::{send_async_request, send_sync_request};
 use crate::translators::translator::translator::Translator;
-use tokio::time::{sleep, Duration};
-use reqwest::Client as ClientAsync;
 use reqwest::blocking::Client as ClientSync;
+use reqwest::Client as ClientAsync;
+use std::thread;
+use tokio::time::{sleep, Duration};
 pub struct GoogleTranslator {
     pub timeout: u64,
     pub delay: u64,

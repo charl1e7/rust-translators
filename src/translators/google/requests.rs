@@ -1,10 +1,10 @@
 use crate::translators::google::error::GoogleError;
 use html_escape::decode_html_entities;
 use regex::Regex;
-use reqwest::Client;
-use urlencoding::encode;
-use reqwest::Client as ClientAsync;
 use reqwest::blocking::Client as ClientSync;
+use reqwest::Client;
+use reqwest::Client as ClientAsync;
+use urlencoding::encode;
 pub async fn send_async_request(
     client: &ClientAsync,
     target_language: &str,
