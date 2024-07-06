@@ -1,4 +1,4 @@
-use crate::{GoogleTranslator, Translator};
+use translators::{GoogleTranslator, Translator};
 
 #[tokio::test]
 async fn test_translate_async() {
