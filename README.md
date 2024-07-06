@@ -15,7 +15,7 @@ use translators::{GoogleTranslator, Translator};
 async fn main() {
     let trans = GoogleTranslator::default();
     let a = trans
-        .translate_async("Hello, world!", "", "ru")
+        .translate_async("Hello, world!", "", "es")
         .await
         .unwrap();
     println!("{a}");
@@ -25,7 +25,7 @@ async fn main() {
 Add to the dependency:
 ```rust
 [dependencies]
-translators = { version = "0.1.1", features = ["google"] }
+translators = { version = "0.2.0", features = ["google"] }
 tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
 ```
 
@@ -36,7 +36,7 @@ use translators::{GoogleTranslator, Translator};
 fn main() {
     let trans = GoogleTranslator::default();
     let a = trans
-        .translate_sync("Hello, world!", "", "ru")
+        .translate_sync("Hello, world!", "", "es")
         .unwrap();
     println!("{a}");
 }
@@ -45,7 +45,7 @@ fn main() {
 Add to the dependency:
 ```rust
 [dependencies]
-translators = { version = "0.1.1", features = ["google"] }
+translators = { version = "0.2.0", features = ["google"] }
 ```
 
 
