@@ -49,9 +49,6 @@
 //! - `deepl`: WIP,
 //!
 
-
-
-
 mod translators;
 
 pub use translators::Translator;
