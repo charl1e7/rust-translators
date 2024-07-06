@@ -1,0 +1,1 @@
+Free Google Translator, Deepl without API key and limits.
