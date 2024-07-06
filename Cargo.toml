@@ -6,6 +6,17 @@ authors = ["charl1e7"]
 description = "Free Google Translator, Deepl without API key and limits."
 license = "MIT"
 repository = "https://github.com/charl1e7/rust-translators"
+homepage = "https://github.com/charl1e7/rust-translators"
+readme = "README.md"
+keywords = ["translator", "google", "deepl"]
+documentation = "https://docs.rs/translators/0.1.0/translators/"
+exclude = [
+    "tests/", # Исключаем директорию tests и её содержимое
+    "examples/", # Исключаем директорию tests и её содержимое
+    "Cargo.lock", # Исключаем файл Cargo.lock
+    "README.md", # Исключаем файл README.md
+    "LICENSE", # Исключаем файл README.md
+]
 
 [dependencies]
 reqwest = { version = "0.12.5", features = ["blocking"] }
