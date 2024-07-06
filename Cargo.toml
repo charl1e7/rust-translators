@@ -1,6 +1,6 @@
 [package]
 name = "translators"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["charl1e7"]
 description = "Free Google Translator, Deepl without API key and limits."
@@ -11,11 +11,11 @@ readme = "README.md"
 keywords = ["translator", "google", "deepl"]
 documentation = "https://docs.rs/translators/0.1.0/translators/"
 exclude = [
-    "tests/", # Исключаем директорию tests и её содержимое
-    "examples/", # Исключаем директорию tests и её содержимое
-    "Cargo.lock", # Исключаем файл Cargo.lock
-    "README.md", # Исключаем файл README.md
-    "LICENSE", # Исключаем файл README.md
+    "tests/",
+    "examples/",
+    "Cargo.lock",
+    "README.md",
+    "LICENSE",
 ]
 
 [dependencies]
