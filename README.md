@@ -4,9 +4,8 @@
 
 
 # translators [![Crates.io][crates-badge]][crates-url] ![License][license-badge]
-  
-`translators` is an async/sync library for Google Translator and Deepl without an API key and limits. 
-Ащк
+
+`translators` is an async/sync library for Google Translator and Deepl without an API key and limits.
 
 ### Async example
 ```rust
