@@ -6,7 +6,9 @@ use reqwest::Client as ClientAsync;
 use std::thread;
 use tokio::time::{sleep, Duration};
 pub struct GoogleTranslator {
+    /// How long to wait for a request
     pub timeout: u64,
+    /// Delay before sending a new request
     pub delay: u64,
 }
 impl Translator for GoogleTranslator {
