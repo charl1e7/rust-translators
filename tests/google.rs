@@ -41,10 +41,10 @@ fn test_sync() {
 // #[tokio::test]
 // async fn test_async_proxy() {
 //     let translator = GoogleTranslator::new(GoogleTranslatorConfig {
-///         timeout: 35, // How long to wait for a request
-///         delay: 0, // delay between each request
-///         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
-///     });
+//         timeout: 35, // How long to wait for a request
+//         delay: 0, // delay between each request
+//         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
+//     });
 //     let text = "Hello, world!";
 //     let source_lang = "en";
 //     let target_lang = "fr";
@@ -65,10 +65,10 @@ fn test_sync() {
 // #[test]
 // fn test_sync_proxy() {
 //     let translator = GoogleTranslator::new(GoogleTranslatorConfig {
-///         timeout: 35, // How long to wait for a request
-///         delay: 0, // delay between each request
-///         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
-///     });
+//         timeout: 35, // How long to wait for a request
+//         delay: 0, // delay between each request
+//         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
+//     });
 //     let text = "Hello, world!";
 //     let source_lang = "en";
 //     let target_lang = "fr";

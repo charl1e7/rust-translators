@@ -22,7 +22,9 @@
 //!
 
 mod translators;
-pub use translators::Translator;
+
+// general
+pub use translators::translator::translator::Translator;
 
 // google
 #[cfg(feature = "google")]
