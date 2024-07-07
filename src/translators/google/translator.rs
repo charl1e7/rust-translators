@@ -1,8 +1,6 @@
 use crate::translators::google::error::GoogleError;
 use crate::translators::google::requests::{send_async_request, send_sync_request};
 use crate::Translator;
-use reqwest::blocking::Client as ClientSync;
-use reqwest::Client as ClientAsync;
 use std::thread;
 use tokio::time::{sleep, Duration};
 
@@ -41,22 +39,36 @@ use tokio::time::{sleep, Duration};
 /// }
 /// ```
 ///
-/// # Customizing the Translator
+/// # Proxy
 ///
-/// You can customize the request timeout and delay:
+/// See the [reqwest documentation](https://docs.rs/reqwest/latest/reqwest/struct.Proxy.html) for how to configure the address
 ///
 /// ```no_run ignore
-/// let trans = GoogleTranslator {
-///     timeout: 35, // ms
-///     delay: 300, // ms
-/// };
+/// use translators::{GoogleTranslator, Translator};
+/// // tokio = { version = "xxx", features = ["rt-multi-thread"] }
+///
+/// #[tokio::main]
+/// async fn main() {
+///     let google_trans = GoogleTranslator{
+///         timeout: 35,
+///         delay: 0,
+///         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or socks5 or https
+///     };
+///     let translated_text = google_trans
+///         .translate_async("Hello, world!", "", "es")
+///         .await
+///         .unwrap();
+///     println!("{}", translated_text);
+/// }
 /// ```
+///
+#[derive(Clone, Debug)]
 pub struct GoogleTranslator {
     /// How long to wait for a request in seconds
     pub timeout: u64,
     /// Delay before sending a new request in milliseconds
     pub delay: u64,
-    pub proxy_adress: Option<String>,
+    pub proxy_address: Option<String>,
 }
 
 impl Translator for GoogleTranslator {
@@ -64,7 +76,7 @@ impl Translator for GoogleTranslator {
     type Error = GoogleError;
 
     async fn translate_async(
-        self: Self,
+        self: &Self,
         text: &str,
         source_language: &str,
         target_language: &str,
@@ -80,7 +92,7 @@ impl Translator for GoogleTranslator {
                 &source_language,
                 chunk_str,
                 self.timeout,
-                self.proxy_adress.as_deref(),
+                self.proxy_address.as_deref(),
             )
             .await?;
             if self.delay > 0 {
@@ -94,7 +106,7 @@ impl Translator for GoogleTranslator {
     }
 
     fn translate_sync(
-        self: Self,
+        self: &Self,
         text: &str,
         source_language: &str,
         target_language: &str,
@@ -110,7 +122,7 @@ impl Translator for GoogleTranslator {
                 &source_language,
                 chunk_str,
                 self.timeout,
-                self.proxy_adress.as_deref(),
+                self.proxy_address.as_deref(),
             )?;
             if self.delay > 0 {
                 thread::sleep(Duration::from_millis(self.delay));
@@ -126,7 +138,7 @@ impl Translator for GoogleTranslator {
         GoogleTranslator {
             timeout: 35,
             delay: 0,
-            proxy_adress: None,
+            proxy_address: None,
         }
     }
 }

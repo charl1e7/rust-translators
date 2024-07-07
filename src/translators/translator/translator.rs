@@ -1,15 +1,15 @@
-pub trait Translator {
+pub trait Translator: Clone {
     type Config;
     type Error;
 
     async fn translate_async(
-        self: Self,
+        self: &Self,
         text: &str,
         target_language: &str,
         source_language: &str,
     ) -> Result<String, Self::Error>;
     fn translate_sync(
-        self: Self,
+        self: &Self,
         text: &str,
         target_language: &str,
         source_language: &str,

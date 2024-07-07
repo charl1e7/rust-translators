@@ -43,7 +43,7 @@ fn test_sync() {
 //     let translator = GoogleTranslator{
 //         timeout: 35,
 //         delay: 0,
-//         proxy_adress: Some("http://0.0.0.0:80".to_string()),
+//         proxy_address: Some("http://0.0.0.0:80".to_string()),
 //     };
 //     let text = "Hello, world!";
 //     let source_lang = "en";
@@ -67,7 +67,7 @@ fn test_sync() {
 //     let translator = GoogleTranslator{
 //         timeout: 35,
 //         delay: 0,
-//         proxy_adress: Some("http://0.0.0.0:1080".to_string()),
+//         proxy_address: Some("http://0.0.0.0:1080".to_string()),
 //     };
 //     let text = "Hello, world!";
 //     let source_lang = "en";
