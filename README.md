@@ -6,7 +6,7 @@
 # translators [![Crates.io][crates-badge]][crates-url] ![License][license-badge]
 
 `translators` is an *async/sync* library for **Google Translator** and **Deepl** with **no API key** and **no limits**. It also includes support for **proxy**.
-* **There are no limits?** Yes, I tested the translation of a book exceeding 1 million characters and uploaded the raw string into a single function without any issues.
+* **There are no limits?**  Yes, I tested the translation of a book exceeding 1 million characters and uploaded the raw string into a single function without any issues.
 * **What translation services are supported?** Supports Google Translate and will soon Deepl.
 
 # Examples
