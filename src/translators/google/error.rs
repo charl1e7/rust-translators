@@ -4,7 +4,6 @@ use std::str::Utf8Error;
 
 #[derive(Debug)]
 pub enum GoogleError {
-    Captcha,
     InvalidRequest(String),
     EncodingError(String),
 }
@@ -14,7 +13,6 @@ impl Error for GoogleError {}
 impl fmt::Display for GoogleError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            GoogleError::Captcha => write!(f, "Captcha prevents the request, change the config."),
             GoogleError::InvalidRequest(ref e) => write!(f, "Invalid request: {}", e),
             GoogleError::EncodingError(ref e) => write!(f, "Encoding error: {}", e), // Display for EncodingError
         }

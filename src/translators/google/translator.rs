@@ -83,10 +83,19 @@ impl Translator for GoogleTranslator {
         target_language: &str,
     ) -> Result<String, Self::Error> {
         let mut result = String::new();
+        let mut start = 0;
 
-        for chunk in text.as_bytes().chunks(TEXT_LIMIT) {
-            let chunk_str = std::str::from_utf8(chunk)?;
+        while start < text.len() {
+            let mut end = start + TEXT_LIMIT;
+            if end >= text.len() {
+                end = text.len();
+            } else {
+                while !text.is_char_boundary(end) {
+                    end -= 1;
+                }
+            }
 
+            let chunk_str = &text[start..end];
             let translated_chunk = send_async_request(
                 &target_language,
                 &source_language,
@@ -95,11 +104,13 @@ impl Translator for GoogleTranslator {
                 self.proxy_address.as_deref(),
             )
             .await?;
+
             if self.delay > 0 {
                 sleep(Duration::from_millis(self.delay)).await;
             }
 
             result.push_str(&translated_chunk);
+            start = end;
         }
 
         Ok(result)
@@ -112,10 +123,19 @@ impl Translator for GoogleTranslator {
         target_language: &str,
     ) -> Result<String, Self::Error> {
         let mut result = String::new();
+        let mut start = 0;
 
-        for chunk in text.as_bytes().chunks(TEXT_LIMIT) {
-            let chunk_str = std::str::from_utf8(chunk)?;
+        while start < text.len() {
+            let mut end = start + TEXT_LIMIT;
+            if end >= text.len() {
+                end = text.len();
+            } else {
+                while !text.is_char_boundary(end) {
+                    end -= 1;
+                }
+            }
 
+            let chunk_str = &text[start..end];
             let translated_chunk = send_sync_request(
                 &target_language,
                 &source_language,
@@ -123,11 +143,13 @@ impl Translator for GoogleTranslator {
                 self.timeout,
                 self.proxy_address.as_deref(),
             )?;
+
             if self.delay > 0 {
                 thread::sleep(Duration::from_millis(self.delay));
             }
 
             result.push_str(&translated_chunk);
+            start = end;
         }
 
         Ok(result)
