@@ -61,7 +61,7 @@ Add to the dependency:
 translators = { version = "0.1.2", features = ["google"] }
 ```
 
-### 3. Proxy example
+### 3. Proxy and custom config
 
 ```rust
 use translators::{GoogleTranslator, Translator};

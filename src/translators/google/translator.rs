@@ -50,7 +50,7 @@ use tokio::time::sleep;
 /// }
 /// ```
 ///
-/// # Proxy
+/// # Proxy and custom config
 ///
 /// See the [reqwest documentation](https://docs.rs/reqwest/latest/reqwest/struct.Proxy.html) for how to configure the address
 /// - "http://0.0.0.0:8080"
