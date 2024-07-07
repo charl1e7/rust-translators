@@ -61,11 +61,11 @@ use tokio::time::sleep;
 ///
 /// #[tokio::main]
 /// async fn main() {
-///     let google_trans = GoogleTranslator{
-///         timeout: 35,
-///         delay: 0,
+///     let google_trans = GoogleTranslator::new(GoogleTranslatorConfig {
+///         timeout: 35, // How long to wait for a request
+///         delay: 0, // delay between each request
 ///         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
-///     };
+///     });
 ///     let translated_text = google_trans
 ///         .translate_async("Hello, world!", "", "es")
 ///         .await
