@@ -52,10 +52,11 @@ use tokio::time::{sleep, Duration};
 /// };
 /// ```
 pub struct GoogleTranslator {
-    /// How long to wait for a request in milliseconds
+    /// How long to wait for a request in seconds
     pub timeout: u64,
     /// Delay before sending a new request in milliseconds
     pub delay: u64,
+    pub proxy_adress: Option<String>,
 }
 
 impl Translator for GoogleTranslator {
@@ -68,7 +69,6 @@ impl Translator for GoogleTranslator {
         source_language: &str,
         target_language: &str,
     ) -> Result<String, Self::Error> {
-        let client = ClientAsync::new();
         let mut result = String::new();
         const TEXT_LIMIT: usize = 5000;
 
@@ -76,11 +76,11 @@ impl Translator for GoogleTranslator {
             let chunk_str = std::str::from_utf8(chunk)?;
 
             let translated_chunk = send_async_request(
-                &client,
                 &target_language,
                 &source_language,
                 chunk_str,
                 self.timeout,
+                self.proxy_adress.as_deref(),
             )
             .await?;
             if self.delay > 0 {
@@ -99,7 +99,6 @@ impl Translator for GoogleTranslator {
         source_language: &str,
         target_language: &str,
     ) -> Result<String, Self::Error> {
-        let client = ClientSync::new();
         let mut result = String::new();
         const TEXT_LIMIT: usize = 5000;
 
@@ -107,11 +106,11 @@ impl Translator for GoogleTranslator {
             let chunk_str = std::str::from_utf8(chunk)?;
 
             let translated_chunk = send_sync_request(
-                &client,
                 &target_language,
                 &source_language,
                 chunk_str,
                 self.timeout,
+                self.proxy_adress.as_deref(),
             )?;
             if self.delay > 0 {
                 thread::sleep(Duration::from_millis(self.delay));
@@ -127,6 +126,7 @@ impl Translator for GoogleTranslator {
         GoogleTranslator {
             timeout: 35,
             delay: 0,
+            proxy_adress: None,
         }
     }
 }
