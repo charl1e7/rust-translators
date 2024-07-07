@@ -80,6 +80,7 @@ pub struct GoogleTranslator {
     pub timeout: u64,
     /// Delay before sending a new request in milliseconds
     pub delay: u64,
+    /// proxy address for reqwest
     pub proxy_address: Option<String>,
 }
 
@@ -138,7 +139,7 @@ impl Translator for GoogleTranslator {
             match handle.await {
                 Ok(Ok(translated_chunk)) => result.push_str(&translated_chunk),
                 Ok(Err(e)) => return Err(e),
-                Err(e) => return Err(GoogleError::TokioJoinError(e.to_string())), // Обработка ошибки JoinError
+                Err(e) => return Err(GoogleError::TokioJoinError(e.to_string())),
             }
         }
 

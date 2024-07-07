@@ -8,14 +8,12 @@ license = "MIT"
 repository = "https://github.com/charl1e7/rust-translators"
 homepage = "https://github.com/charl1e7/rust-translators"
 readme = "README.md"
-keywords = ["translator", "google", "deepl", "translate"]
+keywords = ["translate", "google", "deepl", "language", "async"]
 documentation = "https://docs.rs/translators/0.1.2/translators/"
 exclude = [
     "tests/",
     "examples/",
     "Cargo.lock",
-    "README.md",
-    "LICENSE",
 ]
 
 [dependencies]
