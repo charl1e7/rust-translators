@@ -17,8 +17,8 @@
 //! By default, Google Translate is employed as the translator; to utilize others, enable them via the flag:
 //!
 //! - `tokio-async` - for enable async features
-//! - `google`
-//! - `deepl`
+//! - `google` - for enable google-translate
+//! - `deepl` - for enable Deepl translate (soon)
 //!
 
 mod translators;

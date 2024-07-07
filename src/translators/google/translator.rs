@@ -53,8 +53,10 @@ use tokio::time::sleep;
 /// # Proxy
 ///
 /// See the [reqwest documentation](https://docs.rs/reqwest/latest/reqwest/struct.Proxy.html) for how to configure the address
-///
-/// ```no_run ignore
+/// - "http://0.0.0.0:8080"
+/// - "https://0.0.0.0:8080"
+/// - "socks5://0.0.0.0:8080" // also suitable for socks4
+/// ``` ignore
 /// use translators::{GoogleTranslator, Translator};
 ///
 /// #[tokio::main]
