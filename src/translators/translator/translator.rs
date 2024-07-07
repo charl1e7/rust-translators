@@ -1,4 +1,4 @@
-pub trait Translator: Clone {
+pub trait Translator: Clone + Default {
     type Config;
     type Error;
 
@@ -14,5 +14,4 @@ pub trait Translator: Clone {
         target_language: &str,
         source_language: &str,
     ) -> Result<String, Self::Error>;
-    fn default() -> Self;
 }

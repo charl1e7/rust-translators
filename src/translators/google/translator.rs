@@ -133,7 +133,9 @@ impl Translator for GoogleTranslator {
 
         Ok(result)
     }
+}
 
+impl Default for GoogleTranslator {
     fn default() -> Self {
         GoogleTranslator {
             timeout: 35,
