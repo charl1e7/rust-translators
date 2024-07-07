@@ -1,14 +1,14 @@
 use std::error::Error;
 use std::fmt;
 use std::str::Utf8Error;
+#[cfg(feature = "tokio-async")]
 use tokio::task::JoinError;
-
 #[derive(Debug)]
 pub enum GoogleError {
     InvalidRequest(String),
     EncodingError(String),
+    #[cfg(feature = "tokio-async")]
     TokioJoinError(String),
-
 }
 // Captcha prevents the request
 impl Error for GoogleError {}
@@ -18,6 +18,7 @@ impl fmt::Display for GoogleError {
         match self {
             GoogleError::InvalidRequest(ref e) => write!(f, "Invalid request: {}", e),
             GoogleError::EncodingError(ref e) => write!(f, "Encoding error: {}", e),
+            #[cfg(feature = "tokio-async")]
             GoogleError::TokioJoinError(ref e) => write!(f, "Tokio join error: {}", e),
         }
     }
@@ -35,6 +36,7 @@ impl From<Utf8Error> for GoogleError {
     }
 }
 
+#[cfg(feature = "tokio-async")]
 impl From<JoinError> for GoogleError {
     fn from(error: JoinError) -> Self {
         GoogleError::TokioJoinError(error.to_string())

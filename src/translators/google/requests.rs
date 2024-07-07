@@ -38,7 +38,6 @@ pub async fn send_async_request(
         Err(GoogleError::InvalidRequest(result_html))
     }
 }
-
 pub fn send_sync_request(
     target_language: &str,
     source_language: &str,

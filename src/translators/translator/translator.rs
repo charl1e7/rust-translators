@@ -3,7 +3,7 @@ use std::fmt::Debug;
 pub trait Translator: Clone + Default + Debug + Sync + Send {
     type Config;
     type Error;
-
+    #[cfg(feature = "tokio-async")]
     async fn translate_async(
         self: &Self,
         text: &str,

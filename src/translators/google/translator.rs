@@ -1,18 +1,29 @@
 use crate::translators::google::error::GoogleError;
-use crate::translators::google::requests::{send_async_request, send_sync_request};
+#[cfg(feature = "tokio-async")]
+use crate::translators::google::requests::send_async_request;
+use crate::translators::google::requests::send_sync_request;
 use crate::Translator;
 use std::thread;
-use tokio::time::{sleep, Duration};
+use std::time::Duration;
+#[cfg(feature = "tokio-async")]
+use tokio::time::sleep;
 
 /// Translates text from one language to another using Google Translate.
 ///
+/// # Dependencies:
+/// Add to your dependency:
+/// ```no_run ignore
+/// [dependencies]
+/// translators = { version = "0.1.2", features = ["google", "tokio-async"] } // "tokio-async" only for async, remove if you only need sync
+/// // only for async:
+/// tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
+/// ```
 /// # Examples
 ///
 /// A simple async example with tokio:
 ///
 /// ```no_run ignore
 /// use translators::{GoogleTranslator, Translator};
-/// // tokio = { version = "xxx", features = ["rt-multi-thread"] }
 ///
 /// #[tokio::main]
 /// async fn main() {
@@ -45,14 +56,13 @@ use tokio::time::{sleep, Duration};
 ///
 /// ```no_run ignore
 /// use translators::{GoogleTranslator, Translator};
-/// // tokio = { version = "xxx", features = ["rt-multi-thread"] }
 ///
 /// #[tokio::main]
 /// async fn main() {
 ///     let google_trans = GoogleTranslator{
 ///         timeout: 35,
 ///         delay: 0,
-///         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or socks5 or https
+///         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
 ///     };
 ///     let translated_text = google_trans
 ///         .translate_async("Hello, world!", "", "es")
@@ -75,7 +85,7 @@ const TEXT_LIMIT: usize = 5000;
 impl Translator for GoogleTranslator {
     type Config = GoogleTranslator;
     type Error = GoogleError;
-
+    #[cfg(feature = "tokio-async")]
     async fn translate_async(
         self: &Self,
         text: &str,
@@ -109,7 +119,8 @@ impl Translator for GoogleTranslator {
                     &chunk_str,
                     timeout,
                     proxy_address.as_deref(),
-                ).await
+                )
+                    .await
             });
 
             handles.push(handle);
@@ -131,7 +142,6 @@ impl Translator for GoogleTranslator {
 
         Ok(result)
     }
-
 
     fn translate_sync(
         self: &Self,
