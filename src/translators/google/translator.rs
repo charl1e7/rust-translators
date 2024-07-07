@@ -71,6 +71,7 @@ pub struct GoogleTranslator {
     pub proxy_address: Option<String>,
 }
 
+const TEXT_LIMIT: usize = 5000;
 impl Translator for GoogleTranslator {
     type Config = GoogleTranslator;
     type Error = GoogleError;
@@ -82,7 +83,6 @@ impl Translator for GoogleTranslator {
         target_language: &str,
     ) -> Result<String, Self::Error> {
         let mut result = String::new();
-        const TEXT_LIMIT: usize = 5000;
 
         for chunk in text.as_bytes().chunks(TEXT_LIMIT) {
             let chunk_str = std::str::from_utf8(chunk)?;
@@ -112,7 +112,6 @@ impl Translator for GoogleTranslator {
         target_language: &str,
     ) -> Result<String, Self::Error> {
         let mut result = String::new();
-        const TEXT_LIMIT: usize = 5000;
 
         for chunk in text.as_bytes().chunks(TEXT_LIMIT) {
             let chunk_str = std::str::from_utf8(chunk)?;

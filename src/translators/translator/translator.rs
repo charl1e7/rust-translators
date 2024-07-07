@@ -1,4 +1,6 @@
-pub trait Translator: Clone + Default {
+use std::fmt::Debug;
+
+pub trait Translator: Clone + Default + Debug + Sync + Send {
     type Config;
     type Error;
 
