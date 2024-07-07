@@ -84,6 +84,7 @@ impl Translator for GoogleTranslator {
     ) -> Result<String, Self::Error> {
         let mut result = String::new();
         let mut start = 0;
+        let mut handles = Vec::new();
 
         while start < text.len() {
             let mut end = start + TEXT_LIMIT;
@@ -95,26 +96,42 @@ impl Translator for GoogleTranslator {
                 }
             }
 
-            let chunk_str = &text[start..end];
-            let translated_chunk = send_async_request(
-                &target_language,
-                &source_language,
-                chunk_str,
-                self.timeout,
-                self.proxy_address.as_deref(),
-            )
-            .await?;
+            let chunk_str = text[start..end].to_string();
+            let target_language = target_language.to_string();
+            let source_language = source_language.to_string();
+            let proxy_address = self.proxy_address.clone();
+            let timeout = self.timeout;
+
+            let handle = tokio::spawn(async move {
+                send_async_request(
+                    &target_language,
+                    &source_language,
+                    &chunk_str,
+                    timeout,
+                    proxy_address.as_deref(),
+                ).await
+            });
+
+            handles.push(handle);
 
             if self.delay > 0 {
                 sleep(Duration::from_millis(self.delay)).await;
             }
 
-            result.push_str(&translated_chunk);
             start = end;
+        }
+
+        for handle in handles {
+            match handle.await {
+                Ok(Ok(translated_chunk)) => result.push_str(&translated_chunk),
+                Ok(Err(e)) => return Err(e),
+                Err(e) => return Err(GoogleError::TokioJoinError(e.to_string())), // Обработка ошибки JoinError
+            }
         }
 
         Ok(result)
     }
+
 
     fn translate_sync(
         self: &Self,

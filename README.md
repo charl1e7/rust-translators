@@ -25,7 +25,7 @@ async fn main() {
 Add to the dependency:
 ```rust
 [dependencies]
-translators = { version = "0.2.0", features = ["google"] }
+translators = { version = "0.1.2", features = ["google"] }
 tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
 ```
 
@@ -45,7 +45,7 @@ fn main() {
 Add to the dependency:
 ```rust
 [dependencies]
-translators = { version = "0.2.0", features = ["google"] }
+translators = { version = "0.1.2", features = ["google"] }
 ```
 
 
