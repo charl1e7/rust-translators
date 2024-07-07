@@ -5,7 +5,7 @@
 
 # translators [![Crates.io][crates-badge]][crates-url] ![License][license-badge]
 
-`translators` is an *async/sync* library for **Google Translator**, **Deepl** ~~(soon)~~ with **no API key** and **no limits**. It also includes support for **proxy**.
+`translators` is an *async/sync* library for **Google Translator**, **Deepl** (soon) with **no API key** and **no limits**. It also includes support for **proxy**.
 
 **Questions**:
 * **There are no limits?**  Yes, I tested the translation of a book exceeding 1 million characters and uploaded the raw string into a single function without any issues.
@@ -17,7 +17,7 @@
 
 # Examples
 * [google-translate](https://github.com/charl1e7/rust-translators/tree/main/examples/google)
-#### 1. Async example
+### 1. Async example
 ```rust
 use translators::{GoogleTranslator, Translator};
 
@@ -81,6 +81,11 @@ Add to the dependency:
 translators = { version = "0.1.2", features = ["google"] }
 ```
 
+## What's New in Version 0.1.2
+
+- **New feature flag "tokio-async"**
+- **Asynchronous request paralleling**
+- **Fixed the text slice**
 
 # Additional Information
 
