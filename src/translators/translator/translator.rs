@@ -16,4 +16,5 @@ pub trait Translator: Clone + Default + Debug + Sync + Send {
         target_language: &str,
         source_language: &str,
     ) -> Result<String, Self::Error>;
+    fn new(config: Self::Config) -> Self;
 }

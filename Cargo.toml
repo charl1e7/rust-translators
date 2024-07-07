@@ -24,6 +24,6 @@ html-escape = "0.2.13"
 regex = "1.10.5"
 
 [features]
-#default = ["google","async"]
+all = ["tokio-async", "google"]
 google = []
 tokio-async = ["dep:tokio"]

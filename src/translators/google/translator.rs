@@ -84,9 +84,18 @@ pub struct GoogleTranslator {
     pub proxy_address: Option<String>,
 }
 
+#[derive(Clone, Debug)]
+pub struct GoogleTranslatorConfig {
+    /// How long to wait for a request in seconds
+    pub timeout: u64,
+    /// Delay before sending a new request in milliseconds
+    pub delay: u64,
+    /// proxy address for reqwest
+    pub proxy_address: Option<String>,
+}
 const TEXT_LIMIT: usize = 5000;
 impl Translator for GoogleTranslator {
-    type Config = GoogleTranslator;
+    type Config = GoogleTranslatorConfig;
     type Error = GoogleError;
     #[cfg(feature = "tokio-async")]
     async fn translate_async(
@@ -183,6 +192,14 @@ impl Translator for GoogleTranslator {
         }
 
         Ok(result)
+    }
+
+    fn new(config: Self::Config) -> Self {
+        GoogleTranslator {
+            timeout: config.timeout,
+            delay: config.delay,
+            proxy_address: config.proxy_address,
+        }
     }
 }
 
