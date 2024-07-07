@@ -5,49 +5,75 @@
 
 # translators [![Crates.io][crates-badge]][crates-url] ![License][license-badge]
 
-`translators` is an async/sync library for Google Translator and Deepl without an API key and limits.
+`translators` is an *async/sync* library for **Google Translator** and **Deepl** with **no API key** and **no limits**. It also includes support for **proxy**.
+* **There are no limits?** Yes, I tested the translation of a book exceeding 1 million characters and uploaded the raw string into a single function without any issues.
+* **What translation services are supported?** Supports Google Translate and will soon Deepl.
 
-### Async example
+# Examples
+* [google-translate](https://github.com/charl1e7/rust-translators/tree/main/examples/google)
+### 1. Async example
 ```rust
 use translators::{GoogleTranslator, Translator};
 
 #[tokio::main]
 async fn main() {
-    let trans = GoogleTranslator::default();
-    let a = trans
-        .translate_async("Hello, world!", "", "ru")
+    let google_trans = GoogleTranslator::default();
+    let res = google_trans
+        .translate_async("Hello, world!", "", "es")
         .await
         .unwrap();
-    println!("{a}");
+    println!("{res}");
 }
 ```
 
 Add to the dependency:
 ```rust
 [dependencies]
-translators = { version = "0.1.1", features = ["google"] }
+translators = { version = "0.2.0", features = ["google", "tokio-async"] }
 tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
 ```
 
-### Sync example
+### 2. Sync example
 ```rust
 use translators::{GoogleTranslator, Translator};
 
 fn main() {
-    let trans = GoogleTranslator::default();
-    let a = trans
-        .translate_sync("Hello, world!", "", "ru")
+    let google_trans = GoogleTranslator::default();
+    let res = google_trans
+        .translate_sync("Hello, world!", "", "es")
         .unwrap();
-    println!("{a}");
+    println!("{res}");
 }
 ```
 
 Add to the dependency:
 ```rust
 [dependencies]
-translators = { version = "0.1.1", features = ["google"] }
+translators = { version = "0.2.0", features = ["google"] }
 ```
 
+### 3. Proxy example
+```rust
+use translators::{GoogleTranslator, Translator};
+
+fn main() {
+    let google_trans = GoogleTranslator{
+        timeout: 35, // How long to wait for a request
+        delay: 0, // delay between each request
+        proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
+    };
+    let res = google_trans
+        .translate_sync("Hello, world!", "", "es")
+        .unwrap();
+    println!("{res}");
+}
+```
+
+Add to the dependency:
+```rust
+[dependencies]
+translators = { version = "0.2.0", features = ["google"] }
+```
 
 ## Additional Information
 
