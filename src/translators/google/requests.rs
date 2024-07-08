@@ -3,7 +3,7 @@ use html_escape::decode_html_entities;
 use regex::Regex;
 use reqwest::blocking::Client as ClientSync;
 use reqwest::Client as ClientAsync;
-use reqwest::{Proxy};
+use reqwest::Proxy;
 use urlencoding::encode;
 pub async fn send_async_request(
     target_language: &str,

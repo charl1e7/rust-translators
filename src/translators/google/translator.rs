@@ -110,6 +110,21 @@ impl Translator for GoogleTranslator {
 
         while start < text.len() {
             let mut end = start + TEXT_LIMIT;
+
+            // Найти ближайший пробел перед достижением лимита
+            if end < text.len() {
+                if let Some(index) = text[start..end].char_indices().rev().find_map(|(i, c)| {
+                    if c.is_whitespace() {
+                        Some(start + i)
+                    } else {
+                        None
+                    }
+                }) {
+                    end = index;
+                }
+            }
+
+            // Гарантируем, что конечный индекс находится в пределах строки
             if end >= text.len() {
                 end = text.len();
             } else {
@@ -138,7 +153,7 @@ impl Translator for GoogleTranslator {
             handles.push(handle);
 
             if self.delay > 0 {
-                sleep(Duration::from_millis(self.delay)).await;
+                tokio::time::sleep(Duration::from_millis(self.delay)).await;
             }
 
             start = end;
@@ -166,6 +181,21 @@ impl Translator for GoogleTranslator {
 
         while start < text.len() {
             let mut end = start + TEXT_LIMIT;
+
+            // Найти ближайший пробел перед достижением лимита
+            if end < text.len() {
+                if let Some(index) = text[start..end].char_indices().rev().find_map(|(i, c)| {
+                    if c.is_whitespace() {
+                        Some(start + i)
+                    } else {
+                        None
+                    }
+                }) {
+                    end = index;
+                }
+            }
+
+            // Гарантируем, что конечный индекс находится в пределах строки
             if end >= text.len() {
                 end = text.len();
             } else {
@@ -184,7 +214,7 @@ impl Translator for GoogleTranslator {
             )?;
 
             if self.delay > 0 {
-                thread::sleep(Duration::from_millis(self.delay));
+                std::thread::sleep(Duration::from_millis(self.delay));
             }
 
             result.push_str(&translated_chunk);
