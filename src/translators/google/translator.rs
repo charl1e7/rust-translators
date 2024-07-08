@@ -113,13 +113,7 @@ impl Translator for GoogleTranslator {
 
             // Найти ближайший пробел перед достижением лимита
             if end < text.len() {
-                if let Some(index) = text[start..end].char_indices().rev().find_map(|(i, c)| {
-                    if c.is_whitespace() {
-                        Some(start + i)
-                    } else {
-                        None
-                    }
-                }) {
+                if let Some(index) = text[start..end].rfind(|c: char| c.is_whitespace()) {
                     end = index;
                 }
             }
@@ -132,6 +126,7 @@ impl Translator for GoogleTranslator {
                     end -= 1;
                 }
             }
+
 
             let chunk_str = text[start..end].to_string();
             let target_language = target_language.to_string();
@@ -182,20 +177,12 @@ impl Translator for GoogleTranslator {
         while start < text.len() {
             let mut end = start + TEXT_LIMIT;
 
-            // Найти ближайший пробел перед достижением лимита
             if end < text.len() {
-                if let Some(index) = text[start..end].char_indices().rev().find_map(|(i, c)| {
-                    if c.is_whitespace() {
-                        Some(start + i)
-                    } else {
-                        None
-                    }
-                }) {
+                if let Some(index) = text[start..end].rfind(|c: char| c.is_whitespace()) {
                     end = index;
                 }
             }
 
-            // Гарантируем, что конечный индекс находится в пределах строки
             if end >= text.len() {
                 end = text.len();
             } else {

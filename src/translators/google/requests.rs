@@ -45,6 +45,7 @@ pub fn send_sync_request(
     timeout: u64,
     proxy_address: Option<&str>,
 ) -> Result<String, GoogleError> {
+    println!("<<{}>>\n", text);
     let escaped_text = encode(text);
     let url = format!(
         "https://translate.google.com/m?tl={}&sl={}&q={}",
