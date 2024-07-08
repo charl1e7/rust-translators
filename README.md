@@ -1,11 +1,12 @@
 # translators [![Crates.io][crates-badge]][crates-url] ![License][license-badge]
 
-`translators` is an *async/sync* library for **Google Translator**, **Deepl** (soon) with **no API key** and **no limits**. It also includes support for **proxy**.
+`translators` is an *async/sync* library for **Google Translator** with **no API key** and **no limits**. It also
+includes support for **proxy**.
 
 **Questions**:
 
-* **There are no limits?**  Yes, I tested the translation of a book exceeding 1 million characters and uploaded the raw string into a single function without any issues.
-* **What translation services are supported?** Supports Google Translate and will soon Deepl.
+* **There are no limits?**  Yes, I tested the translation of a book exceeding 1 million characters and uploaded the raw
+  string into a single function.
 
 **Features flags**
 
@@ -64,33 +65,18 @@ translators = { version = "0.1.3", features = ["google"] }
 ### 3. Proxy and custom config
 
 ```rust
-use translators::{GoogleTranslator, Translator};
-
-fn main() {
-    let google_trans = GoogleTranslator::new(GoogleTranslatorConfig {
-        timeout: 35, // How long to wait for a request
-        delay: 0, // delay between each request
-        proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
-    });
-    let res = google_trans
-        .translate_sync("Hello, world!", "", "es")
-        .unwrap();
-    println!("{res}");
-}
-```
-
-Add to the dependency:
-
-```rust
-[dependencies]
-translators = { version = "0.1.3", features = ["google"] }
+let google_trans = GoogleTranslator::builder()
+    .timeout(35 as u64) // How long to wait for a request in seconds
+    .delay(120 as u64) //How long to wait for a request in milliseconds
+    .proxy_address("http://user:password@0.0.0.0:80") // delete the line if you don't need proxy
+    .build();
 ```
 
 ## What's New in Version 0.1.3
 
-- **New feature flag "all"**
 - **Fix separation of words**
-- **Change the google config**
+- **Add google builder**
+- **New feature flag "all"**
 
 # Additional Information
 

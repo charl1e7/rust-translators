@@ -54,22 +54,13 @@ use std::time::Duration;
 /// - "http://0.0.0.0:8080"
 /// - "https://0.0.0.0:8080"
 /// - "socks5://0.0.0.0:8080" // also suitable for socks4
+/// - "http://user:password@0.0.0.0:80" // basic auth
 /// ``` ignore
-/// use translators::{GoogleTranslator, Translator};
-///
-/// #[tokio::main]
-/// async fn main() {
-///     let google_trans = GoogleTranslator::new(GoogleTranslatorConfig {
-///         timeout: 35, // How long to wait for a request
-///         delay: 0, // delay between each request
-///         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
-///     });
-///     let translated_text = google_trans
-///         .translate_async("Hello, world!", "", "es")
-///         .await
-///         .unwrap();
-///     println!("{}", translated_text);
-/// }
+/// let google_trans = GoogleTranslator::builder()
+///     .timeout(35 as u64) // How long to wait for a request in seconds
+///     .delay(120 as u64) //How long to wait for a request in milliseconds
+///     .proxy_address("http://user:password@0.0.0.0:80") // delete the line if you don't need proxy
+///     .build();
 /// ```
 ///
 #[derive(Builder, Clone, Debug)]
