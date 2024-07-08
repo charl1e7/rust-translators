@@ -36,7 +36,7 @@ Add to the dependency:
 
 ```rust
 [dependencies]
-translators = { version = "0.1.2", features = ["google", "tokio-async"] }
+translators = { version = "0.1.3", features = ["google", "tokio-async"] }
 tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
 ```
 
@@ -58,7 +58,7 @@ Add to the dependency:
 
 ```rust
 [dependencies]
-translators = { version = "0.1.2", features = ["google"] }
+translators = { version = "0.1.3", features = ["google"] }
 ```
 
 ### 3. Proxy and custom config
@@ -83,15 +83,14 @@ Add to the dependency:
 
 ```rust
 [dependencies]
-translators = { version = "0.1.2", features = ["google"] }
+translators = { version = "0.1.3", features = ["google"] }
 ```
 
-## What's New in Version 0.1.2
+## What's New in Version 0.1.3
 
-- **New feature flag "tokio-async"**
-- **Asynchronous request paralleling**
-- **Fixed the text slice**
-- Proxy support
+- **New feature flag "all"**
+- **Fix separation of words**
+- **Change the google config**
 
 # Additional Information
 

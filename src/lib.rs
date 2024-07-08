@@ -8,9 +8,9 @@
 //! - [deepl] (Soon)
 //!
 //! [repository]: https://github.com/charl1e7/rust-translators/tree/main/examples
-//! [google]: https://docs.rs/translators/0.1.2/translators/struct.GoogleTranslator.html
-//! [deepl]: https://docs.rs/translators/0.1.2/translators/struct.DeeplTranslator.html
-//! [proxy]: https://docs.rs/translators/0.1.2/translators/struct.GoogleTranslator.html#proxy
+//! [google]: https://docs.rs/translators/0.1.3/translators/struct.GoogleTranslator.html
+//! [deepl]: https://docs.rs/translators/0.1.3/translators/struct.DeeplTranslator.html
+//! [proxy]: https://docs.rs/translators/0.1.3/translators/struct.GoogleTranslator.html#proxy
 //!
 //! ## Feature flags
 //!

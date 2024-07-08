@@ -11,7 +11,7 @@ use std::time::Duration;
 /// Add to your dependency:
 /// ```no_run ignore
 /// [dependencies]
-/// translators = { version = "0.1.2", features = ["google", "tokio-async"] } // "tokio-async" only for async, remove if you only need sync
+/// translators = { version = "0.1.3", features = ["google", "tokio-async"] } // "tokio-async" only for async, remove if you only need sync
 /// // only for async:
 /// tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
 /// ```
