@@ -3,6 +3,7 @@ use crate::translators::google::error::GoogleError;
 use crate::translators::google::requests::send_async_request;
 use crate::translators::google::requests::send_sync_request;
 use crate::Translator;
+use macon::Builder;
 use std::time::Duration;
 
 /// Translates text from one language to another using Google Translate.
@@ -71,18 +72,9 @@ use std::time::Duration;
 /// }
 /// ```
 ///
-#[derive(Clone, Debug)]
+#[derive(Builder, Clone, Debug)]
+#[builder(Default)]
 pub struct GoogleTranslator {
-    /// How long to wait for a request in seconds
-    pub timeout: u64,
-    /// Delay before sending a new request in milliseconds
-    pub delay: u64,
-    /// proxy address for reqwest
-    pub proxy_address: Option<String>,
-}
-
-#[derive(Clone, Debug)]
-pub struct GoogleTranslatorConfig {
     /// How long to wait for a request in seconds
     pub timeout: u64,
     /// Delay before sending a new request in milliseconds
@@ -92,7 +84,6 @@ pub struct GoogleTranslatorConfig {
 }
 const TEXT_LIMIT: usize = 5000;
 impl Translator for GoogleTranslator {
-    type Config = GoogleTranslatorConfig;
     type Error = GoogleError;
     #[cfg(feature = "tokio-async")]
     async fn translate_async(
@@ -116,7 +107,6 @@ impl Translator for GoogleTranslator {
             } else {
                 text.len()
             };
-
 
             let chunk_str = text[start..end].to_string();
             let target_language = target_language.to_string();
@@ -194,14 +184,6 @@ impl Translator for GoogleTranslator {
         }
 
         Ok(result)
-    }
-
-    fn new(config: Self::Config) -> Self {
-        GoogleTranslator {
-            timeout: config.timeout,
-            delay: config.delay,
-            proxy_address: config.proxy_address,
-        }
     }
 }
 

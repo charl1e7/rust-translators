@@ -31,5 +31,3 @@ pub use translators::translator::translator::Translator;
 pub use translators::google::error::GoogleError;
 #[cfg(feature = "google")]
 pub use translators::google::translator::GoogleTranslator;
-#[cfg(feature = "google")]
-pub use translators::google::translator::GoogleTranslatorConfig;

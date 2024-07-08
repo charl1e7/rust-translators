@@ -452,6 +452,33 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a7a70ba024b9dc04c27ea2f0c0548feb474ec5c54bba33a7f72f873a39d07b24"
 
 [[package]]
+name = "macon"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d807496d8cc55f07d9e8ba896a0dfde06ca2b0b77dbf39f4eea1311229efa577"
+dependencies = [
+    "macon_api",
+    "macon_derive",
+]
+
+[[package]]
+name = "macon_api"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e4bbb10806e60924f12313307840d46e2b26a073e60749e537a640082a992dc"
+
+[[package]]
+name = "macon_derive"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "efd664f26f78e8889f88e9c0332cc05873c548fa2ccb3f354686b6e8fd21a84b"
+dependencies = [
+    "proc-macro2",
+    "quote",
+    "syn",
+]
+
+[[package]]
 name = "memchr"
 version = "2.7.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1096,6 +1123,7 @@ name = "translators"
 version = "0.1.3"
 dependencies = [
  "html-escape",
+    "macon",
  "regex",
  "reqwest",
  "tokio",

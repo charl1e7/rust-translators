@@ -38,6 +38,50 @@ fn test_sync() {
     }
 }
 
+#[tokio::test]
+async fn test_async_builder() {
+    let translator = GoogleTranslator::builder()
+        .timeout(35u64)
+        .delay(0u64)
+        .build();
+    let text = "Hello, world!";
+    let source_lang = "en";
+    let target_lang = "fr";
+
+    match translator
+        .translate_async(text, source_lang, target_lang)
+        .await
+    {
+        Ok(result) => {
+            assert_eq!(result, "Bonjour le monde!");
+        }
+        Err(err) => {
+            eprintln!("Google translation error: {:?}", err);
+            assert!(false);
+        }
+    }
+}
+
+#[test]
+fn test_sync_builder() {
+    let translator = GoogleTranslator::builder()
+        .timeout(35u64)
+        .delay(0u64)
+        .build();
+    let text = "Hello, world!";
+    let source_lang = "en";
+    let target_lang = "fr";
+
+    match translator.translate_sync(text, source_lang, target_lang) {
+        Ok(result) => {
+            assert_eq!(result, "Bonjour le monde!");
+        }
+        Err(err) => {
+            eprintln!("Google translation error: {:?}", err);
+            assert!(false);
+        }
+    }
+}
 // #[tokio::test]
 // async fn test_async_proxy() {
 //     let translator = GoogleTranslator::new(GoogleTranslatorConfig {
