@@ -3,10 +3,7 @@ use crate::translators::google::error::GoogleError;
 use crate::translators::google::requests::send_async_request;
 use crate::translators::google::requests::send_sync_request;
 use crate::Translator;
-use std::thread;
 use std::time::Duration;
-#[cfg(feature = "tokio-async")]
-use tokio::time::sleep;
 
 /// Translates text from one language to another using Google Translate.
 ///
@@ -99,7 +96,7 @@ impl Translator for GoogleTranslator {
     type Error = GoogleError;
     #[cfg(feature = "tokio-async")]
     async fn translate_async(
-        self: &Self,
+        &self,
         text: &str,
         source_language: &str,
         target_language: &str,
@@ -109,23 +106,16 @@ impl Translator for GoogleTranslator {
         let mut handles = Vec::new();
 
         while start < text.len() {
-            let mut end = start + TEXT_LIMIT;
-
-            // Найти ближайший пробел перед достижением лимита
-            if end < text.len() {
-                if let Some(index) = text[start..end].rfind(|c: char| c.is_whitespace()) {
-                    end = index;
-                }
-            }
-
-            // Гарантируем, что конечный индекс находится в пределах строки
-            if end >= text.len() {
-                end = text.len();
+            let end = start + TEXT_LIMIT;
+            let end = if end < text.len() {
+                text.char_indices()
+                    .rev()
+                    .skip_while(|&(i, _)| i > end)
+                    .find(|&(_, c)| c.is_whitespace())
+                    .map_or(end, |(i, _)| i)
             } else {
-                while !text.is_char_boundary(end) {
-                    end -= 1;
-                }
-            }
+                text.len()
+            };
 
 
             let chunk_str = text[start..end].to_string();
@@ -166,7 +156,7 @@ impl Translator for GoogleTranslator {
     }
 
     fn translate_sync(
-        self: &Self,
+        &self,
         text: &str,
         source_language: &str,
         target_language: &str,
@@ -175,21 +165,16 @@ impl Translator for GoogleTranslator {
         let mut start = 0;
 
         while start < text.len() {
-            let mut end = start + TEXT_LIMIT;
-
-            if end < text.len() {
-                if let Some(index) = text[start..end].rfind(|c: char| c.is_whitespace()) {
-                    end = index;
-                }
-            }
-
-            if end >= text.len() {
-                end = text.len();
+            let end = start + TEXT_LIMIT;
+            let end = if end < text.len() {
+                text.char_indices()
+                    .rev()
+                    .skip_while(|&(i, _)| i > end)
+                    .find(|&(_, c)| c.is_whitespace())
+                    .map_or(end, |(i, _)| i)
             } else {
-                while !text.is_char_boundary(end) {
-                    end -= 1;
-                }
-            }
+                text.len()
+            };
 
             let chunk_str = &text[start..end];
             let translated_chunk = send_sync_request(
