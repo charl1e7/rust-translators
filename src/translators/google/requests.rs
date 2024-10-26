@@ -1,4 +1,4 @@
-use crate::translators::google::error::GoogleError;
+use crate::translators::translator;
 use html_escape::decode_html_entities;
 use regex::Regex;
 use reqwest::blocking::Client as ClientSync;
@@ -11,7 +11,7 @@ pub async fn send_async_request(
     text: &str,
     timeout: usize,
     proxy_address: Option<&str>,
-) -> Result<String, GoogleError> {
+) -> Result<String, translator::Error> {
     // client build
     let mut client = ClientAsync::builder();
     // proxy
@@ -40,7 +40,7 @@ pub fn send_sync_request(
     text: &str,
     timeout: usize,
     proxy_address: Option<&str>,
-) -> Result<String, GoogleError> {
+) -> Result<String, translator::Error> {
     // client build
     let mut client = ClientSync::builder();
     // proxy
@@ -71,12 +71,12 @@ fn prepare_url(target_language: &str, source_language: &str, text: &str) -> Stri
     url
 }
 
-fn get_translated_text(html: &str) -> Result<String, GoogleError> {
+fn get_translated_text(html: &str) -> Result<String, translator::Error> {
     // extracting translation text
     let pattern = Regex::new(r#"(?s)class="(?:t0|result-container)">(.*?)<"#).unwrap();
     if let Some(captures) = pattern.captures(html) {
         Ok(decode_html_entities(&captures[1]).to_string())
     } else {
-        Err(GoogleError::InvalidRequest("".to_string()))
+        Err(translator::Error::InvalidRequest("".to_string()))
     }
 }

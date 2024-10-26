@@ -17,11 +17,9 @@
 
 mod translators;
 
-// general trait
-pub use translators::translator::translator::Translator;
+// general
+pub use translators::translator::Error;
+pub use translators::translator::Translator;
 
-// google
-#[cfg(feature = "google")]
-pub use translators::google::error::GoogleError;
 #[cfg(feature = "google")]
 pub use translators::google::translator::GoogleTranslator;

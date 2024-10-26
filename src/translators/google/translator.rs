@@ -1,8 +1,8 @@
-use crate::translators::google::error::GoogleError;
 #[cfg(feature = "tokio-async")]
 use crate::translators::google::requests::send_async_request;
 use crate::translators::google::requests::send_sync_request;
-use crate::Translator;
+use crate::translators::translator;
+
 use macon::Builder;
 #[cfg(feature = "tokio-async")]
 use std::sync::Arc;
@@ -88,16 +88,14 @@ pub struct GoogleTranslator {
     pub max_concurrency: Option<usize>,
 }
 const TEXT_LIMIT: usize = 5000;
-impl Translator for GoogleTranslator {
-    type Error = GoogleError;
-
+impl translator::Translator for GoogleTranslator {
     #[cfg(feature = "tokio-async")]
     async fn translate_async(
         &self,
         text: &str,
         source_language: &str,
         target_language: &str,
-    ) -> Result<String, Self::Error> {
+    ) -> Result<String, translator::Error> {
         let mut result = String::new();
         let mut start = 0;
         let mut tasks = Vec::new();
@@ -174,7 +172,7 @@ impl Translator for GoogleTranslator {
         text: &str,
         source_language: &str,
         target_language: &str,
-    ) -> Result<String, Self::Error> {
+    ) -> Result<String, translator::Error> {
         let mut result = String::new();
         let mut start = 0;
 
