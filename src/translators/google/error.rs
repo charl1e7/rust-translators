@@ -1,9 +1,11 @@
 use std::error::Error;
 use std::fmt;
 use std::str::Utf8Error;
+
 #[cfg(feature = "tokio-async")]
 use tokio::task::JoinError;
-#[derive(Debug)]
+
+#[derive(Debug, Clone)]
 pub enum GoogleError {
     InvalidRequest(String),
     EncodingError(String),

@@ -4,8 +4,10 @@ use crate::translators::google::requests::send_async_request;
 use crate::translators::google::requests::send_sync_request;
 use crate::Translator;
 use macon::Builder;
+use std::sync::Arc;
 use std::time::Duration;
-
+#[cfg(feature = "tokio-async")]
+use tokio::sync::Semaphore; // Добавляем Semaphore для контроля количества задач
 /// Translates text from one language to another using Google Translate.
 ///
 /// # Dependencies:
@@ -72,10 +74,14 @@ pub struct GoogleTranslator {
     pub delay: u64,
     /// proxy address for reqwest
     pub proxy_address: Option<String>,
+    #[cfg(feature = "tokio-async")]
+    /// max workers for reqwest
+    pub max_workers: Option<usize>,
 }
 const TEXT_LIMIT: usize = 5000;
 impl Translator for GoogleTranslator {
     type Error = GoogleError;
+
     #[cfg(feature = "tokio-async")]
     async fn translate_async(
         &self,
@@ -85,7 +91,8 @@ impl Translator for GoogleTranslator {
     ) -> Result<String, Self::Error> {
         let mut result = String::new();
         let mut start = 0;
-        let mut handles = Vec::new();
+        let mut tasks = Vec::new();
+        let semaphore = self.max_workers.map(|max| Arc::new(Semaphore::new(max)));
 
         while start < text.len() {
             let end = start + TEXT_LIMIT;
@@ -104,8 +111,14 @@ impl Translator for GoogleTranslator {
             let source_language = source_language.to_string();
             let proxy_address = self.proxy_address.clone();
             let timeout = self.timeout;
+            let semaphore = semaphore.clone();
 
-            let handle = tokio::spawn(async move {
+            let task = async move {
+                let _permit = match &semaphore {
+                    Some(sem) => Some(sem.acquire().await.unwrap()),
+                    None => None,
+                };
+
                 send_async_request(
                     &target_language,
                     &source_language,
@@ -113,23 +126,32 @@ impl Translator for GoogleTranslator {
                     timeout,
                     proxy_address.as_deref(),
                 )
-                    .await
-            });
+                .await
+            };
 
-            handles.push(handle);
-
-            if self.delay > 0 {
-                tokio::time::sleep(Duration::from_millis(self.delay)).await;
-            }
+            tasks.push(task);
 
             start = end;
         }
 
-        for handle in handles {
-            match handle.await {
-                Ok(Ok(translated_chunk)) => result.push_str(&translated_chunk),
-                Ok(Err(e)) => return Err(e),
-                Err(e) => return Err(GoogleError::TokioJoinError(e.to_string())),
+        // send sync req with delay
+        if self.delay > 0 {
+            for task in tasks {
+                match task.await {
+                    Ok(translated_chunk) => result.push_str(&translated_chunk),
+                    Err(e) => return Err(e),
+                }
+                tokio::time::sleep(Duration::from_millis(self.delay)).await;
+            }
+        // send async async
+        } else {
+            let results = futures::future::join_all(tasks).await;
+
+            for res in results {
+                match res {
+                    Ok(translated_chunk) => result.push_str(&translated_chunk),
+                    Err(e) => return Err(e),
+                }
             }
         }
 
@@ -184,6 +206,8 @@ impl Default for GoogleTranslator {
             timeout: 35,
             delay: 0,
             proxy_address: None,
+            #[cfg(feature = "tokio-async")]
+            max_workers: None,
         }
     }
 }

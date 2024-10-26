@@ -1,7 +1,8 @@
 use std::fmt::Debug;
 
-pub trait Translator: Clone + Default + Debug + Sync {
+pub trait Translator: Clone + Default + Debug + Send + Sync {
     type Error;
+
     #[cfg(feature = "tokio-async")]
     async fn translate_async(
         &self,
@@ -9,6 +10,7 @@ pub trait Translator: Clone + Default + Debug + Sync {
         target_language: &str,
         source_language: &str,
     ) -> Result<String, Self::Error>;
+
     fn translate_sync(
         &self,
         text: &str,

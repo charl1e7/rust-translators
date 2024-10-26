@@ -43,6 +43,7 @@ async fn test_async_builder() {
     let translator = GoogleTranslator::builder()
         .timeout(35u64)
         .delay(0u64)
+        .max_workers(2usize)
         .build();
     let text = "Hello, world!";
     let source_lang = "en";
@@ -68,6 +69,7 @@ fn test_sync_builder() {
         .timeout(35u64)
         .delay(0u64)
         // .proxy_address("http://user:password@0.0.0.0:80")
+        .max_workers(2usize)
         .build();
     let text = "Hello, world!";
     let source_lang = "en";
