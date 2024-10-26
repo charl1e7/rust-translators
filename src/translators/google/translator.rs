@@ -14,7 +14,8 @@ use tokio::sync::Semaphore; // Добавляем Semaphore для контро�
 /// Add to your dependency:
 /// ```no_run ignore
 /// [dependencies]
-/// translators = { version = "0.1.4", features = ["google", "tokio-async"] } // "tokio-async" only for async, remove if you only need sync
+/// // "tokio-async" only for async, remove if you only need sync
+/// translators = { version = "0.1.4", features = ["google", "tokio-async"] }
 /// // only for async:
 /// tokio = { version = "x", features = ["rt-multi-thread"] }
 /// ```
@@ -58,13 +59,17 @@ use tokio::sync::Semaphore; // Добавляем Semaphore для контро�
 /// - "socks5://0.0.0.0:8080" // also suitable for socks4
 /// - "http://user:password@0.0.0.0:80" // basic auth
 /// ``` ignore
+/// // delete any line if you don't need it
 /// let google_trans = GoogleTranslator::builder()
-///     .timeout(35 as usize) // How long to wait for a request in seconds
-///     .delay(120 as usize) //How long to wait for a request in milliseconds
+///     // How long to wait for a request in seconds
+///     .timeout(35 as usize)
+///     //How long to wait for a request in milliseconds
+///     .delay(120 as usize)
 ///     // shows how many requests can be handled concurrently
 ///     // work only with async without delay
-///     .max_concurrency(2 as usize) // delete this line to eliminate the limitation.
-///     .proxy_address("http://user:password@0.0.0.0:80") // delete the line if you don't need proxy
+///     .max_concurrency(2 as usize)
+///     // proxy
+///     .proxy_address("http://user:password@0.0.0.0:80")
 ///     .build();
 /// ```
 ///

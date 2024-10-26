@@ -3,7 +3,7 @@
 //! without API key requirements or limits.
 //! It also includes support for [proxy].
 //!
-//! Examples of usage in the [repository].
+//! Examples of usage in the [repository]:
 //! - [google]
 //!
 //! [repository]: https://github.com/charl1e7/rust-translators/tree/main/examples

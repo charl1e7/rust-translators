@@ -44,6 +44,7 @@ async fn test_async_builder() {
         .timeout(35usize)
         .delay(0usize)
         .max_concurrency(2usize)
+        // .proxy_address("http://user:password@0.0.0.0:80")
         .build();
     let text = "Hello, world!";
     let source_lang = "en";
@@ -68,8 +69,8 @@ fn test_sync_builder() {
     let translator = GoogleTranslator::builder()
         .timeout(35usize)
         .delay(0usize)
-        // .proxy_address("http://user:password@0.0.0.0:80")
         .max_concurrency(2usize)
+        // .proxy_address("http://user:password@0.0.0.0:80")
         .build();
     let text = "Hello, world!";
     let source_lang = "en";

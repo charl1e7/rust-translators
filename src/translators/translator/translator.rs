@@ -1,7 +1,10 @@
-use std::{error::Error, fmt::{Debug, Display}};
+use std::{
+    error::Error,
+    fmt::{Debug, Display},
+};
 
 pub trait Translator: Clone + Default + Debug + Send + Sync {
-    type Error: Debug + Display + Error + Clone + PartialEq + Eq;
+    type Error: Debug + Display + Error + Clone + PartialEq + Eq + Send + Sync;
 
     #[cfg(feature = "tokio-async")]
     async fn translate_async(

@@ -1,6 +1,6 @@
 use translators::{GoogleTranslator, Translator};
 
-// tokio = { version = "xxx", features = ["rt-multi-thread"] }
+// tokio = { version = "x", features = ["rt-multi-thread"] }
 #[tokio::main]
 async fn main() {
     let google_trans = GoogleTranslator::default();

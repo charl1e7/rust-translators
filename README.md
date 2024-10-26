@@ -62,23 +62,27 @@ Add to the dependency:
 translators = { version = "0.1.4", features = ["google"] }
 ```
 
-### 3. Proxy and custom config
+### 3. Сustom config
 
 ```rust
+// delete any line if you don't need it
 let google_trans = GoogleTranslator::builder()
-    // delete any line if you don't need it
-    .timeout(35 as usize) // How long to wait for a request in seconds
-    .delay(120 as usize) //How long to wait for a request in milliseconds
+    // How long to wait for a request in seconds
+    .timeout(35 as usize) 
+    //How long to wait for a request in milliseconds
+    .delay(120 as usize) 
     // shows how many requests can be handled concurrently
     // work only with async without delay
     .max_concurrency(2 as usize)
+    // proxy
     .proxy_address("http://user:password@0.0.0.0:80")
     .build();
 ```
 
 ## What's New in Version 0.1.4
 
-- **Add max concurrency**
+- **Add max concurrency in builder**
+- **Fix request delay handling**
 
 # Additional Information
 
@@ -89,3 +93,11 @@ For more details, guides, and advanced usage, please refer to the [examples](htt
 [crates-url]: https://crates.io/crates/translators
 
 [license-badge]: https://img.shields.io/github/license/charl1e7/rust-translators?style=flat&color=%230096FF
+
+# Disclaimer
+
+The `translators` library is provided for educational and research purposes only. It is an open-source project with no affiliation or endorsement by Google or any other translation service provider.
+
+The library is distributed "as-is" with no warranties of any kind, express or implied. The author disclaims any liability for damages arising from the use of this library, including data loss or financial loss. Usage of this library is at your own risk, and the author does not receive any financial benefit from its use.
+
+Users are responsible for complying with third-party terms of service, including those of Google Translator or else translators.
