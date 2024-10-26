@@ -1,6 +1,8 @@
 use translators::{GoogleTranslator, Translator};
 
-async fn main() {
+// translators = { version = "0.1.4", features = ["google", "tokio-async"] }
+// tokio = { version = "x", features = ["rt-multi-thread"] }
+fn main() {
     let google_trans = GoogleTranslator::default();
     let translated_text = google_trans
         .translate_sync("Hello, world!", "", "es")

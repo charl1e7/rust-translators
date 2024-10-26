@@ -11,10 +11,11 @@ readme = "README.md"
 keywords = ["translate", "google", "language", "async"]
 documentation = "https://docs.rs/translators/0.1.4/translators/"
 exclude = ["tests/", "examples/", "Cargo.lock"]
+categories = ["asynchronous"]
 
 [dependencies]
 reqwest = { version = "0.12.8", features = ["blocking", "socks"] }
-tokio = { version = "1.41.0", features = ["macros", "sync"], optional = true }
+tokio = { version = "1.41.0", features = [], optional = true }
 futures = { version = "0.3.31", optional = true }
 urlencoding = "2.1.3"
 html-escape = "0.2.13"
@@ -25,3 +26,9 @@ macon = "1.2.0"
 all = ["tokio-async", "google"]
 google = []
 tokio-async = ["dep:tokio", "dep:futures"]
+
+[dev-dependencies]
+tokio = { version = "1.41.0", features = ["macros"] }
+
+[package.metadata.docs.rs]
+all-features = true

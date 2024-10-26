@@ -4,6 +4,7 @@ use crate::translators::google::requests::send_async_request;
 use crate::translators::google::requests::send_sync_request;
 use crate::Translator;
 use macon::Builder;
+#[cfg(feature = "tokio-async")]
 use std::sync::Arc;
 use std::time::Duration;
 #[cfg(feature = "tokio-async")]

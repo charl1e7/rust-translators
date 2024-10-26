@@ -17,7 +17,7 @@
 
 mod translators;
 
-// general
+// general trait
 pub use translators::translator::translator::Translator;
 
 // google
