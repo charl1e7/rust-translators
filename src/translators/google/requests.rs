@@ -72,6 +72,7 @@ fn prepare_url(target_language: &str, source_language: &str, text: &str) -> Stri
 }
 
 fn get_translated_text(html: &str) -> Result<String, GoogleError> {
+    // extracting translation text
     let pattern = Regex::new(r#"(?s)class="(?:t0|result-container)">(.*?)<"#).unwrap();
     if let Some(captures) = pattern.captures(html) {
         Ok(decode_html_entities(&captures[1]).to_string())
