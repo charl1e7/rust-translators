@@ -8,7 +8,7 @@ use macon::Builder;
 use std::sync::Arc;
 use std::time::Duration;
 #[cfg(feature = "tokio-async")]
-use tokio::sync::Semaphore; // Добавляем Semaphore для контроля количества задач
+use tokio::sync::Semaphore;
 /// Translates text from one language to another using Google Translate.
 ///
 /// # Dependencies:
@@ -18,7 +18,7 @@ use tokio::sync::Semaphore; // Добавляем Semaphore для контро�
 /// // "tokio-async" only for async, remove if you only need sync
 /// translators = { version = "0.1.4", features = ["google", "tokio-async"] }
 /// // only for async:
-/// tokio = { version = "x", features = ["rt-multi-thread"] }
+/// tokio = { version = "x", features = ["rt-multi-thread", "macros"] }
 /// ```
 /// # Examples
 ///
@@ -86,8 +86,11 @@ pub struct GoogleTranslator {
     #[cfg(feature = "tokio-async")]
     /// how many requests can be handled concurrently
     pub max_concurrency: Option<usize>,
+    /// limits on the maximum number of characters from the translator
+    /// set if the translator has changed their limits.
+    pub text_limit: usize,
 }
-const TEXT_LIMIT: usize = 5000;
+
 impl translator::Translator for GoogleTranslator {
     #[cfg(feature = "tokio-async")]
     async fn translate_async(
@@ -104,7 +107,7 @@ impl translator::Translator for GoogleTranslator {
             .map(|max| Arc::new(Semaphore::new(max)));
 
         while start < text.len() {
-            let end = start + TEXT_LIMIT;
+            let end = start + self.text_limit;
             let end = if end < text.len() {
                 text.char_indices()
                     .rev()
@@ -139,7 +142,6 @@ impl translator::Translator for GoogleTranslator {
             };
 
             tasks.push(task);
-
             start = end;
         }
 
@@ -177,7 +179,7 @@ impl translator::Translator for GoogleTranslator {
         let mut start = 0;
 
         while start < text.len() {
-            let end = start + TEXT_LIMIT;
+            let end = start + self.text_limit;
             let end = if end < text.len() {
                 text.char_indices()
                     .rev()
@@ -217,6 +219,7 @@ impl Default for GoogleTranslator {
             proxy_address: None,
             #[cfg(feature = "tokio-async")]
             max_concurrency: None,
+            text_limit: 5000,
         }
     }
 }

@@ -1,4 +1,4 @@
-//! `translators` is an *async/sync*, *tread-safe* library for **Google Translator**
+//! `translators` is an *async/sync*, *thread-safe* library for **Google Translator**
 //! with **no API key** and **no limits**.
 //! It also includes support for **proxy**.
 //!
