@@ -3,12 +3,12 @@ name = "translators"
 version = "0.1.4"
 edition = "2021"
 authors = ["charl1e7"]
-description = "Free Google Translator, Deepl without API key and limits."
+description = "Free Google Translator without API key and limits."
 license = "MIT"
 repository = "https://github.com/charl1e7/rust-translators"
 homepage = "https://github.com/charl1e7/rust-translators"
 readme = "README.md"
-keywords = ["translate", "google", "deepl", "language", "async"]
+keywords = ["translate", "google", "language", "async"]
 documentation = "https://docs.rs/translators/0.1.4/translators/"
 exclude = ["tests/", "examples/", "Cargo.lock"]
 

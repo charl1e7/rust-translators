@@ -66,7 +66,7 @@ use tokio::sync::Semaphore; // Добавляем Semaphore для контро�
 ///     //How long to wait for a request in milliseconds
 ///     .delay(120 as usize)
 ///     // shows how many requests can be handled concurrently
-///     // work only with async without delay
+///     // work only with async
 ///     .max_concurrency(2 as usize)
 ///     // proxy
 ///     .proxy_address("http://user:password@0.0.0.0:80")

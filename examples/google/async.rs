@@ -9,4 +9,16 @@ async fn main() {
         .await
         .unwrap();
     println!("{translated_text}");
+
+    let google_trans = GoogleTranslator::builder()
+        .timeout(35usize)
+        .delay(0usize)
+        .max_concurrency(2usize)
+        // .proxy_address("http://user:password@0.0.0.0:80")
+        .build();
+    let translated_text = google_trans
+        .translate_async("Hello, world!", "", "es")
+        .await
+        .unwrap();
+    println!("{translated_text}");
 }

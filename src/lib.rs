@@ -1,7 +1,6 @@
-//! Asynchronous/synchronous text translation library
-//! supporting Google Translate
-//! without API key requirements or limits.
-//! It also includes support for [proxy].
+//! `translators` is an *async/sync*, *tread-safe* library for **Google Translator**
+//! with **no API key** and **no limits**.
+//! It also includes support for **proxy**.
 //!
 //! Examples of usage in the [repository]:
 //! - [google]
