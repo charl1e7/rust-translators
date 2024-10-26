@@ -118,10 +118,10 @@ impl translator::Translator for GoogleTranslator {
                 text.len()
             };
 
-            let chunk_str = text[start..end].to_string();
-            let target_language = target_language.to_string();
-            let source_language = source_language.to_string();
-            let proxy_address = self.proxy_address.clone();
+            let chunk_str = &text[start..end];
+            let target_language = &target_language;
+            let source_language = &source_language;
+            let proxy_address = &self.proxy_address;
             let timeout = self.timeout;
             let semaphore = semaphore.clone();
 
