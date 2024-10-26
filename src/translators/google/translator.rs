@@ -14,9 +14,9 @@ use tokio::sync::Semaphore; // Добавляем Semaphore для контро�
 /// Add to your dependency:
 /// ```no_run ignore
 /// [dependencies]
-/// translators = { version = "0.1.4", features = ["google", "tokio-async"] } // "tokio-async" only for async, remove if you only need sync
+/// translators = { version = "0.1.3", features = ["google", "tokio-async"] } // "tokio-async" only for async, remove if you only need sync
 /// // only for async:
-/// tokio = { version = "x", features = ["rt-multi-thread"] }
+/// tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
 /// ```
 /// # Examples
 ///
@@ -59,11 +59,8 @@ use tokio::sync::Semaphore; // Добавляем Semaphore для контро�
 /// - "http://user:password@0.0.0.0:80" // basic auth
 /// ``` ignore
 /// let google_trans = GoogleTranslator::builder()
-///     .timeout(35 as usize) // How long to wait for a request in seconds
-///     .delay(120 as usize) //How long to wait for a request in milliseconds
-///     // shows how many requests can be handled concurrently
-///     // work only with async without delay
-///     .max_concurrency(2 as usize) // delete this line to eliminate the limitation.
+///     .timeout(35 as u64) // How long to wait for a request in seconds
+///     .delay(120 as u64) //How long to wait for a request in milliseconds
 ///     .proxy_address("http://user:password@0.0.0.0:80") // delete the line if you don't need proxy
 ///     .build();
 /// ```
@@ -72,14 +69,14 @@ use tokio::sync::Semaphore; // Добавляем Semaphore для контро�
 #[builder(Default)]
 pub struct GoogleTranslator {
     /// How long to wait for a request in seconds
-    pub timeout: usize,
+    pub timeout: u64,
     /// Delay before sending a new request in milliseconds
-    pub delay: usize,
-    /// Proxy address for reqwest
+    pub delay: u64,
+    /// proxy address for reqwest
     pub proxy_address: Option<String>,
     #[cfg(feature = "tokio-async")]
-    /// how many requests can be handled concurrently
-    pub max_concurrency: Option<usize>,
+    /// max workers for reqwest
+    pub max_workers: Option<usize>,
 }
 const TEXT_LIMIT: usize = 5000;
 impl Translator for GoogleTranslator {
@@ -95,9 +92,7 @@ impl Translator for GoogleTranslator {
         let mut result = String::new();
         let mut start = 0;
         let mut tasks = Vec::new();
-        let semaphore = self
-            .max_concurrency
-            .map(|max| Arc::new(Semaphore::new(max)));
+        let semaphore = self.max_workers.map(|max| Arc::new(Semaphore::new(max)));
 
         while start < text.len() {
             let end = start + TEXT_LIMIT;
@@ -146,7 +141,7 @@ impl Translator for GoogleTranslator {
                     Ok(translated_chunk) => result.push_str(&translated_chunk),
                     Err(e) => return Err(e),
                 }
-                tokio::time::sleep(Duration::from_millis(self.delay as u64)).await;
+                tokio::time::sleep(Duration::from_millis(self.delay)).await;
             }
         // send async async
         } else {
@@ -194,7 +189,7 @@ impl Translator for GoogleTranslator {
             )?;
 
             if self.delay > 0 {
-                std::thread::sleep(Duration::from_millis(self.delay as u64));
+                std::thread::sleep(Duration::from_millis(self.delay));
             }
 
             result.push_str(&translated_chunk);
@@ -212,7 +207,7 @@ impl Default for GoogleTranslator {
             delay: 0,
             proxy_address: None,
             #[cfg(feature = "tokio-async")]
-            max_concurrency: None,
+            max_workers: None,
         }
     }
 }

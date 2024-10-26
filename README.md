@@ -1,6 +1,6 @@
 # translators [![Crates.io][crates-badge]][crates-url] ![License][license-badge]
 
-`translators` is an *async/sync*, *tread-safe* library for **Google Translator** with **no API key** and **no limits**. It also
+`translators` is an *async/sync* library for **Google Translator** with **no API key** and **no limits**. It also
 includes support for **proxy**.
 
 **Questions**:
@@ -37,8 +37,8 @@ Add to the dependency:
 
 ```rust
 [dependencies]
-translators = { version = "0.1.4", features = ["google", "tokio-async"] }
-tokio = { version = "x", features = ["rt-multi-thread"] }
+translators = { version = "0.1.3", features = ["google", "tokio-async"] }
+tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
 ```
 
 ### 2. Sync example
@@ -59,26 +59,24 @@ Add to the dependency:
 
 ```rust
 [dependencies]
-translators = { version = "0.1.4", features = ["google"] }
+translators = { version = "0.1.3", features = ["google"] }
 ```
 
 ### 3. Proxy and custom config
 
 ```rust
 let google_trans = GoogleTranslator::builder()
-    // delete any line if you don't need it
-    .timeout(35 as usize) // How long to wait for a request in seconds
-    .delay(120 as usize) //How long to wait for a request in milliseconds
-    // shows how many requests can be handled concurrently
-    // work only with async without delay
-    .max_concurrency(2 as usize)
-    .proxy_address("http://user:password@0.0.0.0:80")
+    .timeout(35 as u64) // How long to wait for a request in seconds
+    .delay(120 as u64) //How long to wait for a request in milliseconds
+    .proxy_address("http://user:password@0.0.0.0:80") // delete the line if you don't need proxy
     .build();
 ```
 
-## What's New in Version 0.1.4
+## What's New in Version 0.1.3
 
-- **Add max concurrency**
+- **Fix separation of words**
+- **Add google builder**
+- **New feature flag "all"**
 
 # Additional Information
 
