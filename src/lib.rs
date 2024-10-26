@@ -7,8 +7,8 @@
 //! - [google]
 //!
 //! [repository]: https://github.com/charl1e7/rust-translators/tree/main/examples
-//! [google]: https://docs.rs/translators/0.1.3/translators/struct.GoogleTranslator.html
-//! [proxy]: https://docs.rs/translators/0.1.3/translators/struct.GoogleTranslator.html#proxy
+//! [google]: https://docs.rs/translators/0.1.4/translators/struct.GoogleTranslator.html
+//! [proxy]: https://docs.rs/translators/0.1.4/translators/struct.GoogleTranslator.html#proxy
 //!
 //! ## Feature flags
 //!

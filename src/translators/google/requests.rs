@@ -9,7 +9,7 @@ pub async fn send_async_request(
     target_language: &str,
     source_language: &str,
     text: &str,
-    timeout: u64,
+    timeout: usize,
     proxy_address: Option<&str>,
 ) -> Result<String, GoogleError> {
     // client build
@@ -25,7 +25,7 @@ pub async fn send_async_request(
     let url = prepare_url(target_language, source_language, text);
     let response = client
         .get(&url)
-        .timeout(std::time::Duration::from_secs(timeout))
+        .timeout(std::time::Duration::from_secs(timeout as u64))
         .send()
         .await?;
 
@@ -38,7 +38,7 @@ pub fn send_sync_request(
     target_language: &str,
     source_language: &str,
     text: &str,
-    timeout: u64,
+    timeout: usize,
     proxy_address: Option<&str>,
 ) -> Result<String, GoogleError> {
     // client build
@@ -54,7 +54,7 @@ pub fn send_sync_request(
     let url = prepare_url(target_language, source_language, text);
     let response = client
         .get(&url)
-        .timeout(std::time::Duration::from_secs(timeout))
+        .timeout(std::time::Duration::from_secs(timeout as u64))
         .send()?;
     let result_html = response.text()?;
 
