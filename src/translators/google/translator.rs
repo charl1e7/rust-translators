@@ -79,7 +79,7 @@ use tokio::sync::Semaphore;
 pub struct GoogleTranslator {
     /// How long to wait for a request in seconds
     pub timeout: usize,
-    /// Delay before sending a new request in milliseconds
+    /// Delay between requests
     pub delay: usize,
     /// Proxy address for reqwest
     pub proxy_address: Option<String>,

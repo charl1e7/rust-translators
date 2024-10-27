@@ -68,10 +68,10 @@ translators = { version = "0.1.4", features = ["google"] }
 let google_trans = GoogleTranslator::builder()
     // How long to wait for a request in seconds
     .timeout(35 as usize) 
-    //How long to wait for a request in milliseconds
+    // delay between requests
     .delay(120 as usize) 
     // shows how many requests can be handled concurrently
-    // None=no limits
+    // delete=no limits
     // work only with async 
     .max_concurrency(2 as usize)
     // proxy

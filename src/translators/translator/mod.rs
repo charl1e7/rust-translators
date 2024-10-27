@@ -21,11 +21,7 @@ pub trait Translator: Clone + Default + Debug + Send + Sync {
         source_language: &str,
     ) -> Result<String, Error>;
 }
-#[derive(Debug)]
-pub enum MyTranslatorError {
-    NetworkError(String),
-    ParsingError(String),
-}
+
 // error
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
@@ -36,6 +32,7 @@ pub enum Error {
     ConnectFailed(String),
     DecodeBody(String),
     Encoding(String),
+    Captcha(String),
     InvalidRequest(String),
     #[cfg(feature = "tokio-async")]
     JoinTask(String),
@@ -53,6 +50,7 @@ impl fmt::Display for Error {
             Error::Timeout(ref e) => write!(f, "Timeout error: {}", e),
             Error::ConnectFailed(ref e) => write!(f, "ConnectFailed error: {}", e),
             Error::DecodeBody(ref e) => write!(f, "Body decoding error: {}", e),
+            Error::Captcha(ref e) => write!(f, "Captcha: {}", e),
             Error::Encoding(ref e) => write!(f, "Encoding error: {}", e),
             Error::InvalidRequest(ref e) => write!(f, "Invalid request: {}", e),
             #[cfg(feature = "tokio-async")]
