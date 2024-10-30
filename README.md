@@ -66,17 +66,16 @@ translators = { version = "0.1.4", features = ["google"] }
 ```rust
 // delete any line if you don't need it
 let google_trans = GoogleTranslator::builder()
-    // How long to wait for a request in seconds
+    // How long to wait for a request in sec
     .timeout(35 as usize) 
-    // delay between requests
+    // delay between requests if the limit is exceeded
     .delay(120 as usize) 
     // shows how many requests can be handled concurrently
-    // delete=no limits
     // work only with async 
     .max_concurrency(2 as usize)
     // proxy
     .proxy_address("http://user:password@0.0.0.0:80")
-    /// limits on the maximum number of characters from the translator
+    /// limits on the maximum number of chars
     /// set if the translator has changed their limits.
     .text_limit(5000)
     .build();
@@ -101,7 +100,7 @@ For more details, guides, and advanced usage, please refer to the [examples](htt
 
 # Disclaimer
 
-The `translators` library is provided for educational and research purposes only. It is an open-source project with no affiliation or endorsement by Google or any other translation service provider.
+The `translators` library is provided for educational and research purposes only.
 
 The library is distributed "as-is" with no warranties of any kind, express or implied. The author disclaims any liability for damages arising from the use of this library, including data loss or financial loss. Usage of this library is at your own risk, and the author does not receive any financial benefit from its use.
 

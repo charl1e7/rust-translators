@@ -62,9 +62,9 @@ use tokio::sync::Semaphore;
 /// ``` ignore
 /// // delete any line if you don't need it
 /// let google_trans = GoogleTranslator::builder()
-///     // How long to wait for a request in seconds
+///     // How long to wait for a request in sec
 ///     .timeout(35 as usize)
-///     //How long to wait for a request in milliseconds
+///     // delay between requests if the limit is exceeded
 ///     .delay(120 as usize)
 ///     // shows how many requests can be handled concurrently
 ///     // work only with async
@@ -77,17 +77,17 @@ use tokio::sync::Semaphore;
 #[derive(Builder, Clone, Debug)]
 #[builder(Default)]
 pub struct GoogleTranslator {
-    /// How long to wait for a request in seconds
+    /// How long to wait for a request in seconds.
     pub timeout: usize,
-    /// Delay between requests
+    /// Delay between requests if the limit is exceeded.
     pub delay: usize,
-    /// Proxy address for reqwest
+    /// Proxy address for reqwest.
     pub proxy_address: Option<String>,
     #[cfg(feature = "tokio-async")]
-    /// how many requests can be handled concurrently
+    /// How many requests can be handled concurrently.
     pub max_concurrency: Option<usize>,
-    /// limits on the maximum number of characters from the translator
-    /// set if the translator has changed their limits.
+    /// Limits on the maximum number of chars.
+    /// Set if the translator has changed their limits.
     pub text_limit: usize,
 }
 
