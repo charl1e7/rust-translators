@@ -2,8 +2,7 @@
 //! with **no API key** and **no limits**.
 //! It also includes support for **proxy**.
 //!
-//! Examples of usage in the [repository]:
-//! - [google]
+//! Examples of usage in the [repository].
 //!
 //! [repository]: https://github.com/charl1e7/rust-translators/tree/main/examples
 //! [google]: https://docs.rs/translators/0.1.4/translators/struct.GoogleTranslator.html
@@ -11,6 +10,7 @@
 //!
 //! ## Feature flags
 //!
+//! - `all`
 //! - `tokio-async` - for enable async features
 //! - `google` - for enable google-translate
 //!

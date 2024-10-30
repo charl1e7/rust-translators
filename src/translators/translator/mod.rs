@@ -1,10 +1,9 @@
 use std::fmt;
-use std::fmt::{Debug, Display};
+use std::fmt::Debug;
 use std::str::Utf8Error;
 #[cfg(feature = "tokio-async")]
 use tokio::task::JoinError;
 
-// trait
 pub trait Translator: Clone + Default + Debug + Send + Sync {
     #[cfg(feature = "tokio-async")]
     async fn translate_async(

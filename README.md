@@ -5,7 +5,7 @@ includes support for **proxy**.
 
 **Questions**:
 
-* **There are no limits?**  Yes, I tested the translation of a book exceeding 1 million characters and uploaded the raw string into a single function. I was able to complete the translation in 20 sec.
+* **There are no limits?**  Yes, I tested the translation of a book exceeding 1 million characters.Everything works.
 
 **Features flags**
 

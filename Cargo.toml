@@ -10,8 +10,8 @@ homepage = "https://github.com/charl1e7/rust-translators"
 readme = "README.md"
 keywords = ["translate", "google", "language", "async"]
 documentation = "https://docs.rs/translators/0.1.4/translators/"
-exclude = ["tests/", "examples/", "Cargo.lock"]
-categories = ["asynchronous"]
+exclude = ["tests/", "examples/"]
+categories = ["asynchronous", "api-bindings"]
 
 [dependencies]
 reqwest = { version = "0.12.8", features = ["blocking", "socks"] }

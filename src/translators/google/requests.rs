@@ -2,9 +2,12 @@ use crate::translators::translator;
 use html_escape::decode_html_entities;
 use regex::Regex;
 use reqwest::blocking::Client as ClientSync;
+#[cfg(feature = "tokio-async")]
 use reqwest::Client as ClientAsync;
 use reqwest::Proxy;
 use urlencoding::encode;
+
+#[cfg(feature = "tokio-async")]
 pub async fn send_async_request(
     target_language: &str,
     source_language: &str,

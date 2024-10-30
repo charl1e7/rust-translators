@@ -9,7 +9,7 @@ use std::sync::Arc;
 use std::time::Duration;
 #[cfg(feature = "tokio-async")]
 use tokio::sync::Semaphore;
-/// Translates text from one language to another using Google Translate.
+/// Google Translate.
 ///
 /// # Dependencies:
 /// Add to your dependency:
@@ -145,7 +145,7 @@ impl translator::Translator for GoogleTranslator {
             start = end;
         }
 
-        // send sync req with delay
+        // send sequential req with a delay
         if self.delay > 0 {
             for task in tasks {
                 match task.await {
@@ -154,7 +154,7 @@ impl translator::Translator for GoogleTranslator {
                 }
                 tokio::time::sleep(Duration::from_millis(self.delay as u64)).await;
             }
-        // send async async
+        // send all req at once
         } else {
             let results = futures::future::join_all(tasks).await;
 
