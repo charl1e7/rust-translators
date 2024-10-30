@@ -1,20 +1,24 @@
-use crate::translators::google::error::GoogleError;
 #[cfg(feature = "tokio-async")]
 use crate::translators::google::requests::send_async_request;
 use crate::translators::google::requests::send_sync_request;
-use crate::Translator;
-use macon::Builder;
-use std::time::Duration;
+use crate::translators::translator;
 
-/// Translates text from one language to another using Google Translate.
+use macon::Builder;
+#[cfg(feature = "tokio-async")]
+use std::sync::Arc;
+use std::time::Duration;
+#[cfg(feature = "tokio-async")]
+use tokio::sync::Semaphore;
+/// Google Translate.
 ///
 /// # Dependencies:
 /// Add to your dependency:
 /// ```no_run ignore
 /// [dependencies]
-/// translators = { version = "0.1.3", features = ["google", "tokio-async"] } // "tokio-async" only for async, remove if you only need sync
+/// // "tokio-async" only for async, remove if you only need sync
+/// translators = { version = "0.1.4", features = ["google", "tokio-async"] }
 /// // only for async:
-/// tokio = { version = "1.38.0", features = ["rt-multi-thread"] }
+/// tokio = { version = "x", features = ["rt-multi-thread", "macros"] }
 /// ```
 /// # Examples
 ///
@@ -56,39 +60,54 @@ use std::time::Duration;
 /// - "socks5://0.0.0.0:8080" // also suitable for socks4
 /// - "http://user:password@0.0.0.0:80" // basic auth
 /// ``` ignore
+/// // delete any line if you don't need it
 /// let google_trans = GoogleTranslator::builder()
-///     .timeout(35 as u64) // How long to wait for a request in seconds
-///     .delay(120 as u64) //How long to wait for a request in milliseconds
-///     .proxy_address("http://user:password@0.0.0.0:80") // delete the line if you don't need proxy
+///     // How long to wait for a request in sec
+///     .timeout(35 as usize)
+///     // delay between requests if the limit is exceeded
+///     .delay(120 as usize)
+///     // shows how many requests can be handled concurrently
+///     // work only with async
+///     .max_concurrency(2 as usize)
+///     // proxy
+///     .proxy_address("http://user:password@0.0.0.0:80")
 ///     .build();
 /// ```
 ///
 #[derive(Builder, Clone, Debug)]
 #[builder(Default)]
 pub struct GoogleTranslator {
-    /// How long to wait for a request in seconds
-    pub timeout: u64,
-    /// Delay before sending a new request in milliseconds
-    pub delay: u64,
-    /// proxy address for reqwest
+    /// How long to wait for a request in seconds.
+    pub timeout: usize,
+    /// Delay between requests if the limit is exceeded.
+    pub delay: usize,
+    /// Proxy address for reqwest.
     pub proxy_address: Option<String>,
+    #[cfg(feature = "tokio-async")]
+    /// How many requests can be handled concurrently.
+    pub max_concurrency: Option<usize>,
+    /// Limits on the maximum number of chars.
+    /// Set if the translator has changed their limits.
+    pub text_limit: usize,
 }
-const TEXT_LIMIT: usize = 5000;
-impl Translator for GoogleTranslator {
-    type Error = GoogleError;
+
+impl translator::Translator for GoogleTranslator {
     #[cfg(feature = "tokio-async")]
     async fn translate_async(
         &self,
         text: &str,
         source_language: &str,
         target_language: &str,
-    ) -> Result<String, Self::Error> {
+    ) -> Result<String, translator::Error> {
         let mut result = String::new();
         let mut start = 0;
-        let mut handles = Vec::new();
+        let mut tasks = Vec::new();
+        let semaphore = self
+            .max_concurrency
+            .map(|max| Arc::new(Semaphore::new(max)));
 
         while start < text.len() {
-            let end = start + TEXT_LIMIT;
+            let end = start + self.text_limit;
             let end = if end < text.len() {
                 text.char_indices()
                     .rev()
@@ -99,13 +118,19 @@ impl Translator for GoogleTranslator {
                 text.len()
             };
 
-            let chunk_str = text[start..end].to_string();
-            let target_language = target_language.to_string();
-            let source_language = source_language.to_string();
-            let proxy_address = self.proxy_address.clone();
+            let chunk_str = &text[start..end];
+            let target_language = &target_language;
+            let source_language = &source_language;
+            let proxy_address = &self.proxy_address;
             let timeout = self.timeout;
+            let semaphore = semaphore.clone();
 
-            let handle = tokio::spawn(async move {
+            let task = async move {
+                let _permit = match &semaphore {
+                    Some(sem) => Some(sem.acquire().await.unwrap()),
+                    None => None,
+                };
+
                 send_async_request(
                     &target_language,
                     &source_language,
@@ -113,23 +138,31 @@ impl Translator for GoogleTranslator {
                     timeout,
                     proxy_address.as_deref(),
                 )
-                    .await
-            });
+                .await
+            };
 
-            handles.push(handle);
-
-            if self.delay > 0 {
-                tokio::time::sleep(Duration::from_millis(self.delay)).await;
-            }
-
+            tasks.push(task);
             start = end;
         }
 
-        for handle in handles {
-            match handle.await {
-                Ok(Ok(translated_chunk)) => result.push_str(&translated_chunk),
-                Ok(Err(e)) => return Err(e),
-                Err(e) => return Err(GoogleError::TokioJoinError(e.to_string())),
+        // send sequential req with a delay
+        if self.delay > 0 {
+            for task in tasks {
+                match task.await {
+                    Ok(translated_chunk) => result.push_str(&translated_chunk),
+                    Err(e) => return Err(e),
+                }
+                tokio::time::sleep(Duration::from_millis(self.delay as u64)).await;
+            }
+        // send all req at once
+        } else {
+            let results = futures::future::join_all(tasks).await;
+
+            for res in results {
+                match res {
+                    Ok(translated_chunk) => result.push_str(&translated_chunk),
+                    Err(e) => return Err(e),
+                }
             }
         }
 
@@ -141,12 +174,12 @@ impl Translator for GoogleTranslator {
         text: &str,
         source_language: &str,
         target_language: &str,
-    ) -> Result<String, Self::Error> {
+    ) -> Result<String, translator::Error> {
         let mut result = String::new();
         let mut start = 0;
 
         while start < text.len() {
-            let end = start + TEXT_LIMIT;
+            let end = start + self.text_limit;
             let end = if end < text.len() {
                 text.char_indices()
                     .rev()
@@ -167,7 +200,7 @@ impl Translator for GoogleTranslator {
             )?;
 
             if self.delay > 0 {
-                std::thread::sleep(Duration::from_millis(self.delay));
+                std::thread::sleep(Duration::from_millis(self.delay as u64));
             }
 
             result.push_str(&translated_chunk);
@@ -184,6 +217,9 @@ impl Default for GoogleTranslator {
             timeout: 35,
             delay: 0,
             proxy_address: None,
+            #[cfg(feature = "tokio-async")]
+            max_concurrency: None,
+            text_limit: 5000,
         }
     }
 }

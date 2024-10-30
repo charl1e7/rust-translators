@@ -41,8 +41,11 @@ fn test_sync() {
 #[tokio::test]
 async fn test_async_builder() {
     let translator = GoogleTranslator::builder()
-        .timeout(35u64)
-        .delay(0u64)
+        .timeout(35usize)
+        .delay(0usize)
+        .max_concurrency(2usize)
+        .text_limit(5000usize)
+        // .proxy_address("http://user:password@0.0.0.0:80")
         .build();
     let text = "Hello, world!";
     let source_lang = "en";
@@ -65,8 +68,10 @@ async fn test_async_builder() {
 #[test]
 fn test_sync_builder() {
     let translator = GoogleTranslator::builder()
-        .timeout(35u64)
-        .delay(0u64)
+        .timeout(35usize)
+        .delay(0usize)
+        .max_concurrency(2usize)
+        .text_limit(5000usize)
         // .proxy_address("http://user:password@0.0.0.0:80")
         .build();
     let text = "Hello, world!";
