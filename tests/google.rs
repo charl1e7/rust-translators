@@ -1,4 +1,7 @@
-use std::time::{Duration, Instant};
+use std::{
+    fs,
+    time::{Duration, Instant},
+};
 
 use translators::{GoogleTranslator, Translator};
 
@@ -194,6 +197,30 @@ async fn res_time() -> (Duration, Duration) {
             + Duration::from_millis(50),
     )
 }
+
+#[tokio::test]
+async fn test_file() {
+    let translator = GoogleTranslator::default();
+    let text = fs::read_to_string("./tests/input.txt").unwrap();
+    let source_lang = "fr";
+    let target_lang = "en";
+    match translator
+        .translate_async(&text, source_lang, target_lang)
+        .await
+    {
+        Ok(result) => {
+            assert!(
+                (result.chars().count() as isize - text.chars().count() as isize).abs()
+                    < (text.chars().count() as f64 * 0.5) as isize,
+            );
+        }
+        Err(err) => {
+            eprintln!("Google translation error: {:?}", err);
+            assert!(false);
+        }
+    }
+}
+
 // #[tokio::test]
 // async fn test_async_proxy() {
 //     let translator = GoogleTranslator::new(GoogleTranslatorConfig {

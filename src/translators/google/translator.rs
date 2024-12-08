@@ -100,25 +100,13 @@ impl translator::Translator for GoogleTranslator {
         target_language: &str,
     ) -> Result<String, translator::Error> {
         let mut result = String::new();
-        let mut start = 0;
         let mut tasks = Vec::new();
         let semaphore = self
             .max_concurrency
             .map(|max| Arc::new(Semaphore::new(max)));
-
-        while start < text.len() {
-            let end = start + self.text_limit;
-            let end = if end < text.len() {
-                text.char_indices()
-                    .rev()
-                    .skip_while(|&(i, _)| i > end)
-                    .find(|&(_, c)| c.is_whitespace())
-                    .map_or(end, |(i, _)| i)
-            } else {
-                text.len()
-            };
-
-            let chunk_str = &text[start..end];
+        let chunks = split_chunks(text, self.text_limit);
+        for chunk in chunks {
+            let chunk_str = &text[chunk.start..chunk.end];
             let target_language = &target_language;
             let source_language = &source_language;
             let proxy_address = &self.proxy_address;
@@ -142,7 +130,6 @@ impl translator::Translator for GoogleTranslator {
             };
 
             tasks.push(task);
-            start = end;
         }
 
         // send sequential req with a delay
@@ -177,20 +164,9 @@ impl translator::Translator for GoogleTranslator {
     ) -> Result<String, translator::Error> {
         let mut result = String::new();
         let mut start = 0;
-
-        while start < text.len() {
-            let end = start + self.text_limit;
-            let end = if end < text.len() {
-                text.char_indices()
-                    .rev()
-                    .skip_while(|&(i, _)| i > end)
-                    .find(|&(_, c)| c.is_whitespace())
-                    .map_or(end, |(i, _)| i)
-            } else {
-                text.len()
-            };
-
-            let chunk_str = &text[start..end];
+        let chunks = split_chunks(text, self.text_limit);
+        for chunk in chunks {
+            let chunk_str = &text[chunk.start..chunk.end];
             let translated_chunk = send_sync_request(
                 &target_language,
                 &source_language,
@@ -204,7 +180,6 @@ impl translator::Translator for GoogleTranslator {
             }
 
             result.push_str(&translated_chunk);
-            start = end;
         }
 
         Ok(result)
@@ -222,4 +197,53 @@ impl Default for GoogleTranslator {
             text_limit: 5000,
         }
     }
+}
+
+fn split_chunks(text: &str, text_limit: usize) -> Vec<Chunk> {
+    let delimiters = &[
+        ' ', '\n', '\r', '\t', '.', ',', ':', ';', '"', '(', ')', '[', ']', '{', '}', '/',
+    ];
+    let mut chunks = vec![];
+    let mut start_index = 0;
+    let mut chars_count = 0;
+    let mut last_delimiter_pos = None;
+
+    for (char_i, char) in text.char_indices() {
+        chars_count += 1;
+
+        if delimiters.contains(&char) {
+            last_delimiter_pos = Some((char_i + char.len_utf8(), chars_count));
+        }
+
+        if chars_count == text_limit {
+            let (end, reset_count) = match last_delimiter_pos {
+                Some((delimiter_pos, delimiter_count)) => (delimiter_pos, delimiter_count),
+                None => (char_i, chars_count),
+            };
+
+            chunks.push(Chunk {
+                start: start_index,
+                end,
+            });
+
+            start_index = end;
+            chars_count = chars_count - reset_count;
+            last_delimiter_pos = None;
+        }
+    }
+
+    if start_index < text.len() {
+        chunks.push(Chunk {
+            start: start_index,
+            end: text.len(),
+        });
+    }
+
+    chunks
+}
+
+#[derive(Default, Debug)]
+struct Chunk {
+    start: usize,
+    end: usize,
 }
