@@ -200,7 +200,10 @@ async fn res_time() -> (Duration, Duration) {
 
 #[tokio::test]
 async fn test_file() {
-    let translator = GoogleTranslator::default();
+    let translator = GoogleTranslator::builder()
+        .timeout(35usize)
+        .max_concurrency(1usize)
+        .build();
     let text = fs::read_to_string("./tests/input.txt").unwrap();
     let source_lang = "fr";
     let target_lang = "en";
@@ -211,7 +214,7 @@ async fn test_file() {
         Ok(result) => {
             assert!(
                 (result.chars().count() as isize - text.chars().count() as isize).abs()
-                    < (text.chars().count() as f64 * 0.5) as isize,
+                    < (text.chars().count() as f64 * 0.1) as isize,
             );
         }
         Err(err) => {
