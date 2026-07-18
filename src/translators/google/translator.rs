@@ -4,8 +4,6 @@ use crate::translators::google::requests::send_sync_request;
 use crate::translators::translator;
 
 use macon::Builder;
-#[cfg(feature = "tokio-async")]
-use std::sync::Arc;
 use std::time::Duration;
 #[cfg(feature = "tokio-async")]
 use tokio::sync::Semaphore;
@@ -99,61 +97,55 @@ impl translator::Translator for GoogleTranslator {
         source_language: &str,
         target_language: &str,
     ) -> Result<String, translator::Error> {
-        let mut result = String::new();
-        let mut tasks = Vec::new();
-        let semaphore = self
-            .max_concurrency
-            .map(|max| Arc::new(Semaphore::new(max)));
-        let chunks = split_chunks(text, self.text_limit);
-        for chunk in chunks {
-            let chunk_str = &text[chunk.start..chunk.end];
-            let target_language = &target_language;
-            let source_language = &source_language;
-            let proxy_address = &self.proxy_address;
-            let timeout = self.timeout;
-            let semaphore = semaphore.clone();
-
-            let task = async move {
-                let _permit = match &semaphore {
-                    Some(sem) => Some(sem.acquire().await.unwrap()),
-                    None => None,
-                };
-
-                send_async_request(
-                    &target_language,
-                    &source_language,
-                    &chunk_str,
-                    timeout,
-                    proxy_address.as_deref(),
-                )
-                .await
-            };
-
-            tasks.push(task);
+        let mut builder = reqwest::Client::builder();
+        if let Some(proxy) = &self.proxy_address {
+            builder = builder.proxy(reqwest::Proxy::all(proxy)?);
         }
+        builder = builder.timeout(Duration::from_secs(self.timeout as u64));
+        builder = builder.user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        let client = builder.build()?;
 
-        // send sequential req with a delay
+        let chunks = split_chunks(text, self.text_limit);
+
         if self.delay > 0 {
-            for task in tasks {
-                match task.await {
-                    Ok(translated_chunk) => result.push_str(&translated_chunk),
-                    Err(e) => return Err(e),
-                }
+            let mut result = String::new();
+            for chunk in chunks {
+                let chunk_str = &text[chunk.start..chunk.end];
+                let translated = send_async_request(
+                    &client,
+                    target_language,
+                    source_language,
+                    chunk_str,
+                ).await?;
+                result.push_str(&translated);
                 tokio::time::sleep(Duration::from_millis(self.delay as u64)).await;
             }
-        // send all req at once
-        } else {
-            let results = futures::future::join_all(tasks).await;
-
-            for res in results {
-                match res {
-                    Ok(translated_chunk) => result.push_str(&translated_chunk),
-                    Err(e) => return Err(e),
-                }
-            }
+            return Ok(result);
         }
 
-        Ok(result)
+        use futures::stream::{self, StreamExt};
+        let concurrency = self.max_concurrency.unwrap_or(10);
+
+        let results: Vec<Result<String, translator::Error>> = stream::iter(chunks)
+            .map(|chunk| {
+                let client = client.clone(); // Дешевое клонирование Arc внутри reqwest
+                let chunk_str = text[chunk.start..chunk.end].to_string();
+                let tl = target_language.to_string();
+                let sl = source_language.to_string();
+                async move {
+                    send_async_request(&client, &tl, &sl, &chunk_str).await
+                }
+            })
+            .buffered(concurrency)
+            .collect()
+            .await;
+
+        let mut final_result = String::new();
+        for res in results {
+            final_result.push_str(&res?);
+        }
+
+        Ok(final_result)
     }
 
     fn translate_sync(
@@ -162,16 +154,23 @@ impl translator::Translator for GoogleTranslator {
         source_language: &str,
         target_language: &str,
     ) -> Result<String, translator::Error> {
+        let mut builder = reqwest::blocking::Client::builder();
+        if let Some(proxy) = &self.proxy_address {
+            builder = builder.proxy(reqwest::Proxy::all(proxy)?);
+        }
+        builder = builder.timeout(Duration::from_secs(self.timeout as u64));
+        builder = builder.user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+        let client = builder.build()?;
+
         let mut result = String::new();
         let chunks = split_chunks(text, self.text_limit);
         for chunk in chunks {
             let chunk_str = &text[chunk.start..chunk.end];
             let translated_chunk = send_sync_request(
-                &target_language,
-                &source_language,
+                &client,
+                target_language,
+                source_language,
                 chunk_str,
-                self.timeout,
-                self.proxy_address.as_deref(),
             )?;
 
             if self.delay > 0 {
@@ -217,7 +216,7 @@ fn split_chunks(text: &str, text_limit: usize) -> Vec<Chunk> {
         if chars_count == text_limit {
             let (end, reset_count) = match last_delimiter_pos {
                 Some((delimiter_pos, delimiter_count)) => (delimiter_pos, delimiter_count),
-                None => (char_i, chars_count),
+                None => (char_i + char.len_utf8(), chars_count), 
             };
 
             chunks.push(Chunk {
@@ -226,7 +225,7 @@ fn split_chunks(text: &str, text_limit: usize) -> Vec<Chunk> {
             });
 
             start_index = end;
-            chars_count = chars_count - reset_count;
+            chars_count -= reset_count;
             last_delimiter_pos = None;
         }
     }

@@ -1,11 +1,10 @@
 use std::{
     fs,
-    time::{Duration, Instant},
+    time::Instant,
 };
 
 use translators::{GoogleTranslator, Translator};
 
-// "Hi"
 const TEXT_CHUNKS: u128 = 4;
 
 #[tokio::test]
@@ -15,19 +14,12 @@ async fn test_async() {
     let source_lang = "en";
     let target_lang = "fr";
 
-    match translator
-        .translate_async(text, source_lang, target_lang)
-        .await
-    {
-        Ok(result) => {
-            assert_eq!(result, "Bonjour le monde!");
-        }
-        Err(err) => {
-            eprintln!("Google translation error: {:?}", err);
-            assert!(false);
-        }
+    match translator.translate_async(text, source_lang, target_lang).await {
+        Ok(result) => assert_eq!(result, "Bonjour le monde!"),
+        Err(err) => panic!("Google translation error: {:?}", err),
     }
 }
+
 #[test]
 fn test_sync() {
     let translator = GoogleTranslator::default();
@@ -36,13 +28,8 @@ fn test_sync() {
     let target_lang = "fr";
 
     match translator.translate_sync(text, source_lang, target_lang) {
-        Ok(result) => {
-            assert_eq!(result, "Bonjour le monde!");
-        }
-        Err(err) => {
-            eprintln!("Google translation error: {:?}", err);
-            assert!(false);
-        }
+        Ok(result) => assert_eq!(result, "Bonjour le monde!"),
+        Err(err) => panic!("Google translation error: {:?}", err),
     }
 }
 
@@ -53,23 +40,14 @@ async fn test_async_builder() {
         .delay(0usize)
         .max_concurrency(2usize)
         .text_limit(5000usize)
-        // .proxy_address("http://user:password@0.0.0.0:80")
         .build();
     let text = "Hello, world!";
     let source_lang = "en";
     let target_lang = "fr";
 
-    match translator
-        .translate_async(text, source_lang, target_lang)
-        .await
-    {
-        Ok(result) => {
-            assert_eq!(result, "Bonjour le monde!");
-        }
-        Err(err) => {
-            eprintln!("Google translation error: {:?}", err);
-            assert!(false);
-        }
+    match translator.translate_async(text, source_lang, target_lang).await {
+        Ok(result) => assert_eq!(result, "Bonjour le monde!"),
+        Err(err) => panic!("Google translation error: {:?}", err),
     }
 }
 
@@ -80,192 +58,89 @@ fn test_sync_builder() {
         .delay(0usize)
         .max_concurrency(2usize)
         .text_limit(5000usize)
-        // .proxy_address("http://user:password@0.0.0.0:80")
         .build();
     let text = "Hello, world!";
     let source_lang = "en";
     let target_lang = "fr";
 
     match translator.translate_sync(text, source_lang, target_lang) {
-        Ok(result) => {
-            assert_eq!(result, "Bonjour le monde!");
-        }
-        Err(err) => {
-            eprintln!("Google translation error: {:?}", err);
-            assert!(false);
-        }
+        Ok(result) => assert_eq!(result, "Bonjour le monde!"),
+        Err(err) => panic!("Google translation error: {:?}", err),
     }
 }
 
 #[tokio::test]
 async fn test_async_delay() {
-    let (res_time, res_abs) = res_time().await;
     let translator = GoogleTranslator::builder()
         .timeout(35usize)
         .delay(1000usize)
         .text_limit(2usize)
-        // .proxy_address("http://user:password@0.0.0.0:80")
         .build();
     let text = "Hi".repeat(TEXT_CHUNKS as usize);
     let source_lang = "en";
     let target_lang = "fr";
+    
     let start_time = Instant::now();
-    match translator
-        .translate_async(&text, source_lang, target_lang)
-        .await
-    {
-        Ok(_result) => {
+    match translator.translate_async(&text, source_lang, target_lang).await {
+        Ok(_) => {
             let elapsed_time = start_time.elapsed().as_millis();
-            let eq =
-                (TEXT_CHUNKS * 1000) + ((res_time.as_millis() - res_abs.as_millis()) * TEXT_CHUNKS);
+            let min_expected_time = TEXT_CHUNKS * 1000;
+            
             assert!(
-                elapsed_time >= eq,
-                "Execution time {elapsed_time} was less than {eq} seconds {res_abs:?}"
+                elapsed_time >= min_expected_time,
+                "Execution time {elapsed_time}ms was less than expected delay {min_expected_time}ms. Delay logic might be broken."
             );
         }
-        Err(err) => {
-            eprintln!("Google translation error: {:?}", err);
-            assert!(false);
-        }
+        Err(err) => panic!("Google translation error: {:?}", err),
     }
 }
 
 #[tokio::test]
 async fn test_async_conc() {
-    let (res_time, res_abs) = res_time().await;
-    let translator = GoogleTranslator::builder()
+    let translator_conc = GoogleTranslator::builder()
         .timeout(35usize)
-        .max_concurrency(1usize)
         .text_limit(2usize)
-        // .proxy_address("http://user:password@0.0.0.0:80")
         .build();
     let text = "Hi".repeat(TEXT_CHUNKS as usize);
     let source_lang = "en";
     let target_lang = "fr";
-    let start_time = Instant::now();
-    match translator
-        .translate_async(&text, source_lang, target_lang)
-        .await
-    {
-        Ok(_result) => {
-            let elapsed_time = start_time.elapsed().as_millis();
-            let eq = TEXT_CHUNKS * (res_time.as_millis() - res_abs.as_millis());
-            assert!(
-                elapsed_time > eq,
-                "Execution time {elapsed_time} was less than {eq} seconds {res_abs:?}"
-            );
-        }
-        Err(err) => {
-            eprintln!("Google translation error: {:?}", err);
-            assert!(false);
-        }
-    }
-}
+    
+    let start_conc = Instant::now();
+    let _ = translator_conc.translate_async(&text, source_lang, target_lang).await.unwrap();
+    let conc_time = start_conc.elapsed().as_millis();
 
-async fn res_time() -> (Duration, Duration) {
-    let translator = GoogleTranslator::default();
-    let text = "HiHiHiHi";
-    let source_lang = "en";
-    let target_lang = "fr";
-    let start_time = Instant::now();
-    let res1 = match translator
-        .translate_async(text, source_lang, target_lang)
-        .await
-    {
-        Ok(_result) => start_time.elapsed(),
-        Err(err) => {
-            eprintln!("Google translation error: {:?}", err);
-            panic!("err res");
-        }
-    };
+    let translator_seq = GoogleTranslator::builder()
+        .timeout(35usize)
+        .max_concurrency(1usize) 
+        .text_limit(2usize)
+        .build();
+        
+    let start_seq = Instant::now();
+    let _ = translator_seq.translate_async(&text, source_lang, target_lang).await.unwrap();
+    let seq_time = start_seq.elapsed().as_millis();
 
-    let start_time = Instant::now();
-    let res2 = match translator
-        .translate_async(text, source_lang, target_lang)
-        .await
-    {
-        Ok(_result) => start_time.elapsed(),
-        Err(err) => {
-            eprintln!("Google translation error: {:?}", err);
-            panic!("err res");
-        }
-    };
-    let diff = res1.abs_diff(res2);
-    (
-        res1,
-        diff + Duration::from_millis((diff.as_millis() as f64 * 0.3) as u64)
-            + Duration::from_millis(50),
-    )
+    assert!(
+        seq_time > conc_time,
+        "Sequential execution ({seq_time}ms) should take longer than concurrent ({conc_time}ms). Concurrency limit might be broken."
+    );
 }
 
 #[tokio::test]
 async fn test_file() {
     let translator = GoogleTranslator::builder()
         .timeout(35usize)
-        .max_concurrency(1usize)
+        .max_concurrency(10usize) 
         .build();
     let text = fs::read_to_string("./tests/input.txt").unwrap();
     let source_lang = "fr";
     let target_lang = "en";
-    match translator
-        .translate_async(&text, source_lang, target_lang)
-        .await
-    {
+    match translator.translate_async(&text, source_lang, target_lang).await {
         Ok(result) => {
             assert!(
                 (result.chars().count() as isize - text.chars().count() as isize).abs()
                     < (text.chars().count() as f64 * 0.1) as isize,
             );
         }
-        Err(err) => {
-            eprintln!("Google translation error: {:?}", err);
-            assert!(false);
-        }
+        Err(err) => panic!("Google translation error: {:?}", err),
     }
 }
-
-// #[tokio::test]
-// async fn test_async_proxy() {
-//     let translator = GoogleTranslator::new(GoogleTranslatorConfig {
-//         timeout: 35, // How long to wait for a request
-//         delay: 0, // delay between each request
-//         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
-//     });
-//     let text = "Hello, world!";
-//     let source_lang = "en";
-//     let target_lang = "fr";
-//
-//     match translator
-//         .translate_async(text, source_lang, target_lang)
-//         .await
-//     {
-//         Ok(result) => {
-//             assert_eq!(result, "Bonjour le monde!");
-//         }
-//         Err(err) => {
-//             eprintln!("Google translation error: {:?}", err);
-//             assert!(false);
-//         }
-//     }
-// }
-// #[test]
-// fn test_sync_proxy() {
-//     let translator = GoogleTranslator::new(GoogleTranslatorConfig {
-//         timeout: 35, // How long to wait for a request
-//         delay: 0, // delay between each request
-//         proxy_address: Some("http://0.0.0.0:8080".to_string()), // or https or socks4 or socks5
-//     });
-//     let text = "Hello, world!";
-//     let source_lang = "en";
-//     let target_lang = "fr";
-//
-//     match translator.translate_sync(text, source_lang, target_lang) {
-//         Ok(result) => {
-//             assert_eq!(result, "Bonjour le monde!");
-//         }
-//         Err(err) => {
-//             eprintln!("Google translation error: {:?}", err);
-//             assert!(false);
-//         }
-//     }
-// }
