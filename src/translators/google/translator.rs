@@ -163,7 +163,6 @@ impl translator::Translator for GoogleTranslator {
         target_language: &str,
     ) -> Result<String, translator::Error> {
         let mut result = String::new();
-        let mut start = 0;
         let chunks = split_chunks(text, self.text_limit);
         for chunk in chunks {
             let chunk_str = &text[chunk.start..chunk.end];
