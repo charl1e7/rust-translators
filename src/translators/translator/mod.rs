@@ -1,6 +1,5 @@
 use std::fmt;
 use std::fmt::Debug;
-use std::future::Future;
 use std::str::Utf8Error;
 #[cfg(feature = "tokio-async")]
 use tokio::task::JoinError;
