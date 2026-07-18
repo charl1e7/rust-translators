@@ -36,7 +36,7 @@ Add to the dependency:
 
 ```rust
 [dependencies]
-translators = { version = "0.1.5", features = ["google", "tokio-async"] }
+translators = { version = "0.2.0", features = ["google", "tokio-async"] }
 tokio = { version = "x", features = ["rt-multi-thread", "macros"] }
 ```
 
@@ -58,7 +58,7 @@ Add to the dependency:
 
 ```rust
 [dependencies]
-translators = { version = "0.1.5", features = ["google"] }
+translators = { version = "0.2.0", features = ["google"] }
 ```
 
 ### 3. Custom config
@@ -81,10 +81,10 @@ let google_trans = GoogleTranslator::builder()
     .build();
 ```
 
-## What's New in Version 0.1.5
+## What's New in Version 0.2.0
 
-- **Mobile compilation support**
-- **Update chunks split**
+- **Support for Rust Edition 2024.**
+- **Configurable maximum concurrency for async translation.**
 
 
 # Additional Information

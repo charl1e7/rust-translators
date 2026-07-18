@@ -1,6 +1,6 @@
 use translators::{GoogleTranslator, Translator};
 
-// translators = { version = "0.1.5", features = ["google"] }
+// translators = { version = "0.2.0", features = ["google"] }
 fn main() {
     let google_trans = GoogleTranslator::default();
     let translated_text = google_trans

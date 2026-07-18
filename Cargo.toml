@@ -9,7 +9,7 @@ repository = "https://github.com/charl1e7/rust-translators"
 homepage = "https://github.com/charl1e7/rust-translators"
 readme = "README.md"
 keywords = ["translate", "google", "language", "async"]
-documentation = "https://docs.rs/translators/0.1.5/translators/"
+documentation = "https://docs.rs/translators/0.2.0/translators/"
 exclude = ["tests/", "examples/", ".vscode/"]
 categories = ["asynchronous", "api-bindings"]
 

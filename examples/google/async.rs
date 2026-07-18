@@ -1,7 +1,7 @@
 use translators::{GoogleTranslator, Translator};
 
-// translators = { version = "0.1.5", features = ["google", "tokio-async"] }
-// tokio = { version = "x", features = ["rt-multi-thread", "macros"] }
+// translators = { version = "0.2.0", features = ["google", "tokio-async"] }
+// tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 #[tokio::main]
 async fn main() {
     let google_trans = GoogleTranslator::default();

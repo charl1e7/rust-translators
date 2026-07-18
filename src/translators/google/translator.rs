@@ -12,9 +12,9 @@ use std::time::Duration;
 /// ```no_run ignore
 /// [dependencies]
 /// // "tokio-async" only for async, remove if you only need sync
-/// translators = { version = "0.1.5", features = ["google", "tokio-async"] }
+/// translators = { version = "0.2.0", features = ["google", "tokio-async"] }
 /// // only for async:
-/// tokio = { version = "x", features = ["rt-multi-thread", "macros"] }
+/// tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 /// ```
 /// # Examples
 ///
