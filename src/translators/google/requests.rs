@@ -20,7 +20,6 @@ pub async fn send_async_request(
 ) -> Result<String, translator::Error> {
     let url = prepare_url(target_language, source_language, text);
     
-    // error_for_status() корректно обработает 429 Too Many Requests или 503
     let response = client.get(&url).send().await?.error_for_status()?;
     let result_html = response.text().await?;
 

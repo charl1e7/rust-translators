@@ -91,11 +91,11 @@ pub struct GoogleTranslator {
 
 impl translator::Translator for GoogleTranslator {
     #[cfg(feature = "tokio-async")]
-    async fn translate_async(
-        &self,
-        text: &str,
-        source_language: &str,
-        target_language: &str,
+    async fn translate_async<'a>(
+        &'a self,
+        text: &'a str,
+        source_language: &'a str,
+        target_language: &'a str,
     ) -> Result<String, translator::Error> {
         let mut builder = reqwest::Client::builder();
         if let Some(proxy) = &self.proxy_address {
@@ -128,7 +128,7 @@ impl translator::Translator for GoogleTranslator {
 
         let results: Vec<Result<String, translator::Error>> = stream::iter(chunks)
             .map(|chunk| {
-                let client = client.clone(); // Дешевое клонирование Arc внутри reqwest
+                let client = client.clone();
                 let chunk_str = text[chunk.start..chunk.end].to_string();
                 let tl = target_language.to_string();
                 let sl = source_language.to_string();
@@ -216,7 +216,7 @@ fn split_chunks(text: &str, text_limit: usize) -> Vec<Chunk> {
         if chars_count == text_limit {
             let (end, reset_count) = match last_delimiter_pos {
                 Some((delimiter_pos, delimiter_count)) => (delimiter_pos, delimiter_count),
-                None => (char_i + char.len_utf8(), chars_count), 
+                None => (char_i + char.len_utf8(), chars_count),
             };
 
             chunks.push(Chunk {

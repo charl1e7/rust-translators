@@ -4,21 +4,20 @@ use std::str::Utf8Error;
 #[cfg(feature = "tokio-async")]
 use tokio::task::JoinError;
 
-#[allow(async_fn_in_trait)]
 pub trait Translator: Clone + Default + Debug + Send + Sync {
     #[cfg(feature = "tokio-async")]
-    async fn translate_async(
-        &self,
-        text: &str,
-        target_language: &str,
-        source_language: &str,
-    ) -> Result<String, Error>;
+    fn translate_async<'a>(
+        &'a self,
+        text: &'a str,
+        source_language: &'a str,
+        target_language: &'a str,
+    ) -> impl Future<Output = Result<String, Error>> + Send + 'a;
 
     fn translate_sync(
         &self,
         text: &str,
-        target_language: &str,
         source_language: &str,
+        target_language: &str,
     ) -> Result<String, Error>;
 }
 
