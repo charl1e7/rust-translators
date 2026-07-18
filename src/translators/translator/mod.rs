@@ -1,5 +1,6 @@
 use std::fmt;
 use std::fmt::Debug;
+use std::future::Future;
 use std::str::Utf8Error;
 #[cfg(feature = "tokio-async")]
 use tokio::task::JoinError;
@@ -21,7 +22,6 @@ pub trait Translator: Clone + Default + Debug + Send + Sync {
     ) -> Result<String, Error>;
 }
 
-// error
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Error {
     Builder(String),
@@ -35,7 +35,7 @@ pub enum Error {
     InvalidRequest(String),
     #[cfg(feature = "tokio-async")]
     JoinTask(String),
-    Uknown(String),
+    Unknown(String),
 }
 
 impl std::error::Error for Error {}
@@ -54,7 +54,7 @@ impl fmt::Display for Error {
             Error::InvalidRequest(e) => write!(f, "Invalid request: {}", e),
             #[cfg(feature = "tokio-async")]
             Error::JoinTask(e) => write!(f, "Tokio join task error: {}", e),
-            Error::Uknown(e) => write!(f, "Unknown error: {}", e),
+            Error::Unknown(e) => write!(f, "Unknown error: {}", e),
         }
     }
 }
@@ -76,7 +76,7 @@ impl From<reqwest::Error> for Error {
         } else if e.is_decode() {
             Error::DecodeBody(e.to_string())
         } else {
-            Error::Uknown(e.to_string())
+            Error::Unknown(e.to_string())
         }
     }
 }

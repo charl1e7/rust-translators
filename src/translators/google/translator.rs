@@ -5,8 +5,6 @@ use crate::translators::translator;
 
 use macon::Builder;
 use std::time::Duration;
-#[cfg(feature = "tokio-async")]
-use tokio::sync::Semaphore;
 /// Google Translate.
 ///
 /// # Dependencies:
@@ -91,61 +89,63 @@ pub struct GoogleTranslator {
 
 impl translator::Translator for GoogleTranslator {
     #[cfg(feature = "tokio-async")]
-    async fn translate_async<'a>(
+    fn translate_async<'a>(
         &'a self,
         text: &'a str,
         source_language: &'a str,
         target_language: &'a str,
-    ) -> Result<String, translator::Error> {
-        let mut builder = reqwest::Client::builder();
-        if let Some(proxy) = &self.proxy_address {
-            builder = builder.proxy(reqwest::Proxy::all(proxy)?);
-        }
-        builder = builder.timeout(Duration::from_secs(self.timeout as u64));
-        builder = builder.user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-        let client = builder.build()?;
-
-        let chunks = split_chunks(text, self.text_limit);
-
-        if self.delay > 0 {
-            let mut result = String::new();
-            for chunk in chunks {
-                let chunk_str = &text[chunk.start..chunk.end];
-                let translated = send_async_request(
-                    &client,
-                    target_language,
-                    source_language,
-                    chunk_str,
-                ).await?;
-                result.push_str(&translated);
-                tokio::time::sleep(Duration::from_millis(self.delay as u64)).await;
+    ) -> impl std::future::Future<Output = Result<String, translator::Error>> + Send + 'a {
+        async move {
+            let mut builder = reqwest::Client::builder();
+            if let Some(proxy) = &self.proxy_address {
+                builder = builder.proxy(reqwest::Proxy::all(proxy)?);
             }
-            return Ok(result);
-        }
+            builder = builder.timeout(Duration::from_secs(self.timeout as u64));
+            builder = builder.user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
+            let client = builder.build()?;
 
-        use futures::stream::{self, StreamExt};
-        let concurrency = self.max_concurrency.unwrap_or(10);
+            let chunks = split_chunks(text, self.text_limit);
 
-        let results: Vec<Result<String, translator::Error>> = stream::iter(chunks)
-            .map(|chunk| {
-                let client = client.clone();
-                let chunk_str = text[chunk.start..chunk.end].to_string();
-                let tl = target_language.to_string();
-                let sl = source_language.to_string();
-                async move {
-                    send_async_request(&client, &tl, &sl, &chunk_str).await
+            if self.delay > 0 {
+                let mut result = String::new();
+                for chunk in chunks {
+                    let chunk_str = &text[chunk.start..chunk.end];
+                    let translated = send_async_request(
+                        &client,
+                        target_language,
+                        source_language,
+                        chunk_str,
+                    ).await?;
+                    result.push_str(&translated);
+                    tokio::time::sleep(Duration::from_millis(self.delay as u64)).await;
                 }
-            })
-            .buffered(concurrency)
-            .collect()
-            .await;
+                return Ok(result);
+            }
 
-        let mut final_result = String::new();
-        for res in results {
-            final_result.push_str(&res?);
+            use futures::stream::{self, StreamExt};
+            let concurrency = self.max_concurrency.unwrap_or(10);
+
+            let results: Vec<Result<String, translator::Error>> = stream::iter(chunks)
+                .map(|chunk| {
+                    let client = client.clone();
+                    let chunk_str = text[chunk.start..chunk.end].to_string();
+                    let tl = target_language.to_string();
+                    let sl = source_language.to_string();
+                    async move {
+                        send_async_request(&client, &tl, &sl, &chunk_str).await
+                    }
+                })
+                .buffered(concurrency)
+                .collect()
+                .await;
+
+            let mut final_result = String::new();
+            for res in results {
+                final_result.push_str(&res?);
+            }
+
+            Ok(final_result)
         }
-
-        Ok(final_result)
     }
 
     fn translate_sync(
