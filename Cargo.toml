@@ -1,6 +1,6 @@
 [package]
 name = "translators"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2024"
 authors = ["charl1e7"]
 description = "Free Google Translator without API key and limits."
@@ -9,7 +9,7 @@ repository = "https://github.com/charl1e7/rust-translators"
 homepage = "https://github.com/charl1e7/rust-translators"
 readme = "README.md"
 keywords = ["translate", "google", "language", "async"]
-documentation = "https://docs.rs/translators/0.2.0/translators/"
+documentation = "https://docs.rs/translators/0.2.1/translators/"
 exclude = ["tests/", "examples/", ".vscode/"]
 categories = ["asynchronous", "api-bindings"]
 

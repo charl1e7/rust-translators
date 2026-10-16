@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build (all features)
+        run: cargo build --all-features --examples
+      - name: Build (sync only)
+        run: cargo build --features google
+      - name: Test
+        # Tests call the real Google endpoint (no API key needed).
+        run: cargo test --all-features

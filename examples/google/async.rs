@@ -1,6 +1,6 @@
 use translators::{GoogleTranslator, Translator};
 
-// translators = { version = "0.2.0", features = ["google", "tokio-async"] }
+// translators = { version = "0.2.1", features = ["google", "tokio-async"] }
 // tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 #[tokio::main]
 async fn main() {

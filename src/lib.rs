@@ -5,8 +5,8 @@
 //! Examples of usage in the [repository].
 //!
 //! [repository]: https://github.com/charl1e7/rust-translators/tree/main/examples
-//! [google]: https://docs.rs/translators/0.2.0/translators/struct.GoogleTranslator.html
-//! [proxy]: https://docs.rs/translators/0.2.0/translators/struct.GoogleTranslator.html#proxy
+//! [google]: https://docs.rs/translators/0.2.1/translators/struct.GoogleTranslator.html
+//! [proxy]: https://docs.rs/translators/0.2.1/translators/struct.GoogleTranslator.html#proxy
 //!
 //! ## Feature flags
 //!

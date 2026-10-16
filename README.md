@@ -36,7 +36,7 @@ Add to the dependency:
 
 ```rust
 [dependencies]
-translators = { version = "0.2.0", features = ["google", "tokio-async"] }
+translators = { version = "0.2.1", features = ["google", "tokio-async"] }
 tokio = { version = "x", features = ["rt-multi-thread", "macros"] }
 ```
 
@@ -58,7 +58,7 @@ Add to the dependency:
 
 ```rust
 [dependencies]
-translators = { version = "0.2.0", features = ["google"] }
+translators = { version = "0.2.1", features = ["google"] }
 ```
 
 ### 3. Custom config
@@ -81,7 +81,15 @@ let google_trans = GoogleTranslator::builder()
     .build();
 ```
 
-## What's New in Version 0.2.0
+## What's New in Version 0.2.1
+
+- **Fixed HTTP 429 / CAPTCHA errors.** Google blocked the old `translate.google.com/m` page and `client=gtx`. The library now uses the JSON endpoint `translate.googleapis.com` with `client=at` (POST) and automatically falls back to other client ids if one is blocked.
+- Clearer errors (HTTP status) when Google blocks a request.
+- Empty source language is treated as `auto`.
+
+## Version 0.2.0
+
+
 
 - **Support for Rust Edition 2024.**
 - **Configurable maximum concurrency for async translation.**
