@@ -1,7 +1,7 @@
 # translators [![Crates.io][crates-badge]][crates-url] ![License][license-badge]
 
 `translators` is a fast *async/sync*, *thread-safe* library for **Google Translator** with **no API key** and **no limits**. It also
-includes support for **proxy**.
+includes support for **proxy**. If the library is not working, update to version 0.2.1.
 
 **Questions**:
 
